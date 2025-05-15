@@ -3,8 +3,8 @@ from . import views
 
 urlpatterns = [
    
-      path('newsarticle/', views.NewsArticleView.as_view(), name='news-article-list-create'),  # GET و POST
-    path('newsarticle/<int:article_id>/', views.NewsArticleView.as_view(), name='news-article-detail'),  # GET و PATCH و DELETE
+      path('articles/', views.NewsArticleView.as_view(), name='news-article-list-create'),  # GET و POST
+    path('articles/<int:article_id>/', views.NewsArticleView.as_view(), name='news-article-detail'),  # GET و PATCH و DELETE
     
     # News Image URLs
     path('upload-image/', views.NewImage.as_view(), name='news-image-list-create'),  # GET و POST
