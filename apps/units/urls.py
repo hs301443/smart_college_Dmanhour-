@@ -3,9 +3,9 @@ from . import views
 
 urlpatterns = [
     # API لـ عرض الوحدات وإنشاء وحدة جديدة
-    path('units/', views.UnitListCreateAPIView.as_view(), name='unit-list-create'),
+    path('unit/', views.UnitListCreateAPIView.as_view(), name='unit-list-create'),
     # API لـ عرض وتحديث وحذف وحدة معينة
-    path('units/<int:pk>/', views.UnitDetailAPIView.as_view(), name='unit-detail'),
+    path('unit/<int:pk>/', views.UnitDetailAPIView.as_view(), name='unit-detail'),
     
     # API لـ عرض الخدمات وإنشاء خدمة جديدة
     path('unit_services/', views.UnitServiceListCreateAPIView.as_view(), name='unit-service-list-create'),
