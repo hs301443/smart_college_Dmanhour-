@@ -47,5 +47,6 @@ class NewsArticle(models.Model):
     event_date = models.DateField(blank=True, null=True)
     event_link = models.URLField(blank=True, null=True)
     def __str__(self):
-        return f"{self.title} ({self.get_type_display()})"
+        return f"{self.title} ({self.get_ar_new_type_display()})"
+
 
