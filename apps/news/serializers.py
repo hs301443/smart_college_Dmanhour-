@@ -39,20 +39,3 @@ class NewsArticleSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at']
 
 
-    def validate_title(self, value):
-        if not value:
-            raise serializers.ValidationError("Arabic title is required.")
-        return value
-
-    # تحقق من أن الـ event_date أكبر من تاريخ اليوم
-    def validate_event_date(self, value):
-        if value and value < datetime.now().date():
-            raise serializers.ValidationError("Event date must be a future date.")
-        return value
-
-    # تحقق مخصص للتحقق من بعض الحقول معًا
-    def validate(self, data):
-        # تحقق من العلاقة بين `created_at` و `event_date` (لا يمكن أن يكون الحدث في الماضي مقارنة بوقت الإنشاء)
-        if data.get('event_date') and data['event_date'] < data.get('created_at', datetime.now().date()):
-            raise serializers.ValidationError("Event date cannot be earlier than the creation date.")
-        return data
