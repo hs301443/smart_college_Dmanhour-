@@ -30,13 +30,13 @@ class NewsArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsArticle
         fields = [
-            'id', 'title',  'description',
+            'id', 'title', 'description',
             'content', 'keywords', 
-            'source',  'image', 'created_at', 'updated_at',
+            'source', 'image', 'created_at', 'updated_at',
             'ar_new_type', 'is_active', 'is_event',
             'month', 'event_date', 'event_link', 'images', 'videos', 'pdfs',
-            
         ]
+        read_only_fields = ['created_at', 'updated_at']
 
 
     def validate_title(self, value):
