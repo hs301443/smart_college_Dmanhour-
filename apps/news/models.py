@@ -23,12 +23,7 @@ class NewsPdf(models.Model):
         return f"PDF for {self.news_article.title}"
 
 class NewsArticle(models.Model):
-    
-    EN_NEWS_TYPES = [
-        ('ad', 'advertisement'),
-        ('event', 'event'),
-        ('new', 'new'),
-    ]
+
 
     AR_NEWS_TYPES = [
         ('اعلان', 'اعلان'),
@@ -36,23 +31,16 @@ class NewsArticle(models.Model):
         ('خبر', 'خبر'),
     ]
 
-    ar_title = models.CharField(max_length=255)
-    en_title = models.CharField(max_length=255)
-    ar_description = models.TextField(blank=True, null=True)
-    en_description = models.TextField(blank=True, null=True)
-    ar_content = models.TextField()
-    en_content = models.TextField()
-    ar_keywords = models.JSONField(blank=True, null=True, default=list)
-    en_keywords = models.JSONField(blank=True, null=True, default=list)
-    ar_source = models.CharField(max_length=255, blank=True, null=True)
-    en_source = models.CharField(max_length=255, blank=True, null=True)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    content = models.TextField()
+    keywords = models.JSONField(blank=True, null=True, default=list)
+    source = models.CharField(max_length=255, blank=True, null=True)
 
     image = models.ImageField(upload_to='news/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     ar_new_type = models.CharField(max_length=20, choices=AR_NEWS_TYPES)
-    en_new_type = models.CharField(max_length=20, choices=EN_NEWS_TYPES)
-    units = models.ManyToManyField(unit, related_name='news')
     is_active = models.BooleanField(default=True)
     is_event = models.BooleanField(default=False)
     month = models.PositiveIntegerField(blank=True, null=True)

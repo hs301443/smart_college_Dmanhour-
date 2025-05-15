@@ -53,6 +53,7 @@ class Staff(models.Model):
     cv= models.FileField(upload_to='staff_cvs/', blank=True, null=True)
     image= models.ImageField(upload_to='staff_images/', blank=True, null=True)
     department=models.ManyToManyField('academics.Department', blank=True, related_name='staffs')
+    unit=models.ManyToManyField('units.unit', blank=True, related_name='staffs')
 
     def __str__(self):
      return f"Staff Member: {self.name}, Position: {self.position}"

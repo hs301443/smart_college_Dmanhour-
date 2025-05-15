@@ -3,6 +3,7 @@ from apps.users.models import CustomUser
 
 # Create your models here.
 class Studentprtal(models.Model):
+    types=models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     content = models.TextField()
     image = models.ImageField(upload_to='Studentportal/', blank=True, null=True)  

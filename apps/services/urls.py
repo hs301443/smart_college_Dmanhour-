@@ -7,8 +7,10 @@ urlpatterns = [
     # API لـ عرض وتحديث وحذف وحدة معينة
     path('section/<int:pk>/', views.SectionDetailAPIView.as_view(), name='section-detail'),
     
-    # API لـ عرض الخدمات وإنشاء خدمة جديدة
-    path('Service/', views.ServiceListCreateAPIView.as_view(), name='unit-service-list-create'),
-    # API لـ عرض وتحديث وحذف خدمة معينة
-    path('Service/<int:pk>/', views.ServiceDetailAPIView.as_view(), name='unit-service-detail'),
+    
+    path('academic-years/', views.AcademicYearListCreateAPIView.as_view(), name='academic-year-list-create'),
+    path('academic-years/<int:pk>/', views.AcademicYearDetailAPIView.as_view(), name='academic-year-detail'),
+
+    
+
 ]

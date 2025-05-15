@@ -63,36 +63,43 @@ class SectionDetailAPIView(APIView):
         section_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# API View للخدمات
-class ServiceListCreateAPIView(APIView):
+
+
+
+# academic year API view
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import acadmic_year
+from .serializers import AcademicYearSerializer
+from django.shortcuts import get_object_or_404
+
+class AcademicYearListCreateAPIView(APIView):
     def get(self, request):
-        service = services.objects.all()
-        serializer = ServiceSerializer(service, many=True)
+        academic_years = acadmic_year.objects.all()
+        serializer = AcademicYearSerializer(academic_years, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
         if not IsAuth(request):
-            return Response({"detail": "Authentication required"}, status=401)
+            return Response({"detail": "Authentication required"}, status=401) 
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = ServiceSerializer(data=request.data)
+        serializer = AcademicYearSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ServiceDetailAPIView(APIView):
-    def get(self, request, pk):
-        if not IsAuth(request):
-            return Response({"detail": "Authentication required"}, status=401)
-        if not has_permission("core.change_visionmission", request):
-            return Response({"detail": "Permission denied"}, status=403)
-        try:
-            service_obj = services.objects.get(pk=pk)
-        except services.DoesNotExist:
-            return Response({'error': 'Service not found'}, status=status.HTTP_404_NOT_FOUND)
+class AcademicYearDetailAPIView(APIView):
+    def get_object(self, pk):
+        return get_object_or_404(acadmic_year, pk=pk)
 
-        serializer = ServiceSerializer(service_obj)
+    def get(self, request, pk):
+        instance = self.get_object(pk)
+        serializer = AcademicYearSerializer(instance, context={'request': request})
         return Response(serializer.data)
 
     def patch(self, request, pk):
@@ -100,12 +107,8 @@ class ServiceDetailAPIView(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        try:
-            service_obj = services.objects.get(pk=pk)
-        except services.DoesNotExist:
-            return Response({'error': 'Service not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ServiceSerializer(service_obj, data=request.data, partial=True)
+        instance = self.get_object(pk)
+        serializer = AcademicYearSerializer(instance, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -116,10 +119,6 @@ class ServiceDetailAPIView(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        try:
-            service_obj = services.objects.get(pk=pk)
-        except services.DoesNotExist:
-            return Response({'error': 'Service not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        service_obj.delete()
+        instance = self.get_object(pk)
+        instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

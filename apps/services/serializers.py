@@ -1,53 +1,66 @@
 from rest_framework import serializers
-from .models import section, services
-
-class SectionMiniSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = section
-        fields = ['name', 'description', 'image']
-
-
-class ServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = services
-        fields = ['id', 'section', 'name', 'description', 'link', 'page']
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['section'] = SectionMiniSerializer(instance.section).data
-        return rep
-
-    def validate(self, data):
-        section_instance = data.get('section')
-        name = data.get('name')
-
-        if section_instance and name:
-            qs = services.objects.filter(section=section_instance, name=name)
-            if self.instance:
-                qs = qs.exclude(id=self.instance.id)
-            if qs.exists():
-                raise serializers.ValidationError("this service name already exists in this section.")
-        return data
-
+from .models import section
 
 class SectionSerializer(serializers.ModelSerializer):
-    services = serializers.SerializerMethodField(read_only=True)
-
     class Meta:
         model = section
         fields = [
-            'id', 'name', 'description', 'image', 'message', 'speech',
-            'biography_link', 'organizational_structure', 'page',
-            'created_at', 'updated_at', 'services'
+            'id',
+            'type',
+            'title',
+            'name',
+            'description',
+            'image',
+            'link',
+            'pdf',
         ]
 
-    def get_services(self, obj):
-        return ServiceSerializer(obj.services.all(), many=True).data
+    def validate_type(self, value):
+        if not value:
+            raise serializers.ValidationError("The 'type' field is required.")
+        return value
+
+    def validate_title(self, value):
+        if not value:
+            raise serializers.ValidationError("The 'title' field is required.")
+        return value
 
     def validate_name(self, value):
-        qs = section.objects.filter(name=value)
-        if self.instance:
-            qs = qs.exclude(id=self.instance.id)
-        if qs.exists():
-            raise serializers.ValidationError("this section name already exists.")
+        if not value:
+            raise serializers.ValidationError("The 'name' field is required.")
         return value
+  
+  
+  
+  #academic year serializer
+  
+  
+from .models import acadmic_year
+
+class AcademicYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = acadmic_year
+        fields = [
+            'id',
+            'year',
+            'leacture_schedule',
+            'partical_exam',
+            'exam',
+            'seating_number',
+        ]
+
+    def validate_year(self, value):
+        if not value:
+            raise serializers.ValidationError("The 'year' field is required.")
+        return value
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+
+        if request:
+            for field in ['leacture_schedule', 'partical_exam', 'exam', 'seating_number']:
+                file = getattr(instance, field)
+                if file:
+                    data[field] = request.build_absolute_uri(file.url)
+        return data

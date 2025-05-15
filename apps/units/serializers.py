@@ -1,56 +1,65 @@
 from rest_framework import serializers
 from .models import unit, UnitService
+from users.models import Staff
 
-# Serializer مصغر لعرض بيانات مختصرة من الوحدة
-class UnitMiniSerializer(serializers.ModelSerializer):
+class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = unit
-        fields = ['id', 'name', 'message']
+        fields = [
+            'id',
+            'name',
+            'description',
+            'image',
+            'created_at',
+            'updated_at',
+        ]
+
+class StaffMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ['id', 'name', 'image', 'position']
 
 class UnitServiceSerializer(serializers.ModelSerializer):
+    unit = UnitSerializer(read_only=True)
+    unit_id = serializers.PrimaryKeyRelatedField(
+        queryset=unit.objects.all(),
+        source='unit',
+        required=True,  # مطلوب عند الإنشاء
+        write_only=True
+    )
+
+    orgnization_structure = StaffMiniSerializer(many=True, read_only=True)
+    orgnization_structure_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Staff.objects.all(),
+        source='orgnization_structure',
+        required=False,
+        write_only=True
+    )
+
     class Meta:
         model = UnitService
-        fields = ['id', 'unit', 'name', 'description', 'link', 'page']
+        fields = [
+            'id',
+            'unit',
+            'unit_id',
+            'abou_unit',
+            'orgnization_structure',
+            'orgnization_structure_ids',
+            'unit_objectives',
+        ]
 
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['unit'] = UnitMiniSerializer(instance.unit).data
-        return rep
-
-    def validate_unit(self, value):
-        if not unit.objects.filter(id=value.id).exists():
-            raise serializers.ValidationError("this unit does not exist.")
+    def validate_abou_unit(self, value):
+        if not value:
+            raise serializers.ValidationError("about_unit is required.")
         return value
 
-    def validate_link(self, value):
-        if value and not value.startswith("http"):
-            raise serializers.ValidationError("the link must start with http or https.")
+    def validate_unit_objectives(self, value):
+        if not value:
+            raise serializers.ValidationError("unit_objectives is required.")
         return value
 
-    def validate(self, data):
-        unit_instance = data.get("unit")
-        name = data.get("name")
-
-        if UnitService.objects.filter(unit=unit_instance, name=name).exists():
-            raise serializers.ValidationError("this service name already exists in this unit.")
-        return data
-# Serializer للوحدة ويعرض الخدمات المرتبطة بيها
-class UnitSerializer(serializers.ModelSerializer):
-    services = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = unit
-        fields = ['id', 'name', 'description', 'image', 'message', 'speech',
-                  'biography_link', 'organizational_structure', 'page',
-                  'created_at', 'updated_at', 'services']
-
-    def get_services(self, obj):
-        return UnitServiceSerializer(obj.services.all(), many=True).data
-
-    def validate_name(self, value):
-        qs = unit.objects.filter(name=value)
-        if self.instance:
-            qs = qs.exclude(id=self.instance.id)
-        if qs.exists():
-            raise serializers.ValidationError("this name already exists.")
+    def validate_orgnization_structure_ids(self, value):
+        if not value:
+            raise serializers.ValidationError("orgnization_structure_ids is required.")
         return value
