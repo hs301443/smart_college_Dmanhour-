@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from project.shortcuts import IsAuth, has_permission
-from .models import section, services
-from .serializers import SectionSerializer, ServiceSerializer
+from .models import section
+from .serializers import SectionSerializer
 
 # API View للوحدات
 class SectionListCreateAPIView(APIView):

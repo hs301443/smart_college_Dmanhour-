@@ -1,18 +1,11 @@
 from rest_framework import serializers
-from .models import unit, UnitService
-from users.models import Staff
+from .models import unit as UnitModel, UnitService  # ❗️ حل التضارب هنا
+from apps.users.models import Staff
 
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
-        model = unit
-        fields = [
-            'id',
-            'name',
-            'description',
-            'image',
-            'created_at',
-            'updated_at',
-        ]
+        model = UnitModel
+        fields = ['id', 'name', 'description', 'image', 'created_at', 'updated_at']
 
 class StaffMiniSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,12 +15,10 @@ class StaffMiniSerializer(serializers.ModelSerializer):
 class UnitServiceSerializer(serializers.ModelSerializer):
     unit = UnitSerializer(read_only=True)
     unit_id = serializers.PrimaryKeyRelatedField(
-        queryset=unit.objects.all(),
+        queryset=UnitModel.objects.all(),  # ✅ الآن ما فيش تضارب
         source='unit',
-        required=True,  # مطلوب عند الإنشاء
         write_only=True
     )
-
     orgnization_structure = StaffMiniSerializer(many=True, read_only=True)
     orgnization_structure_ids = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -40,13 +31,8 @@ class UnitServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnitService
         fields = [
-            'id',
-            'unit',
-            'unit_id',
-            'abou_unit',
-            'orgnization_structure',
-            'orgnization_structure_ids',
-            'unit_objectives',
+            'id', 'unit', 'unit_id', 'abou_unit',
+            'orgnization_structure', 'orgnization_structure_ids', 'unit_objectives'
         ]
 
     def validate_abou_unit(self, value):
