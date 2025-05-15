@@ -16,7 +16,7 @@ class unit(models.Model):
 
 class UnitService(models.Model):
     unit = models.ForeignKey(unit, on_delete=models.CASCADE, related_name='services')
-    abou_unit = models.TextField(blank=True, null=True)
+    about_unit = models.TextField(blank=True, null=True)
     orgnization_structure = models.ManyToManyField('users.Staff', blank=True, related_name='unit_services')
     unit_objectives = models.TextField(blank=True, null=True)
     def __str__(self):

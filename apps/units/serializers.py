@@ -31,7 +31,7 @@ class UnitServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnitService
         fields = [
-            'id', 'unit', 'unit_id', 'abou_unit',
+            'id', 'unit', 'unit_id', 'about_unit',
             'orgnization_structure', 'orgnization_structure_ids', 'unit_objectives'
         ]
 
