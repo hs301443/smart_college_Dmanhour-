@@ -32,7 +32,7 @@ class NewsArticleSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title',  'description',
             'content', 'keywords', 
-            'asource',  'image', 'created_at', 'updated_at',
+            'source',  'image', 'created_at', 'updated_at',
             'ar_new_type', 'is_active', 'is_event',
             'month', 'event_date', 'event_link', 'images', 'videos', 'pdfs',
             

@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from apps.units.models import unit
 from .models import CustomUser, Graduation, Staff
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils.timezone import now
@@ -88,19 +90,25 @@ class DepartmentBasicSerializer(serializers.ModelSerializer):
         model = Department
         fields = ['id', 'name']
 
+class UnitSerializers(serializers.ModelSerializer):
+    class meta:
+        model=unit
+        fields = ['id', 'name']
+
 
 class StaffSerializer(serializers.ModelSerializer):
     department_detail = DepartmentBasicSerializer(source='department', many=True, read_only=True)
-
+    unit_detail=UnitSerializers(source='units', many=True, read_only=True)
     class Meta:
         model = Staff
-        fields = ['id', 'name', 'position', 'cv', 'image', 'department', 'department_detail']
+        fields = ['id', 'name', 'position', 'cv', 'image', 'department', 'department_detail','units','unit_detail']
         extra_kwargs = {
             'name': {'required': True},
             'position': {'required': True},
             'cv': {'required': True},
             'image': {'required': True},
             'department': {'required': True},
+            'units': {'required': True},
         }
 
     def validate_name(self, value):

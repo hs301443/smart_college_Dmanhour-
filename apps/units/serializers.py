@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import unit as UnitModel, UnitService  # ❗️ حل التضارب هنا
+from .models import unit as UnitModel, UnitService
 from apps.users.models import Staff
 
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnitModel
-        fields = ['id', 'name', 'description', 'image', 'created_at', 'updated_at']
+        fields = ['id', 'name']
 
 class StaffMiniSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +15,7 @@ class StaffMiniSerializer(serializers.ModelSerializer):
 class UnitServiceSerializer(serializers.ModelSerializer):
     unit = UnitSerializer(read_only=True)
     unit_id = serializers.PrimaryKeyRelatedField(
-        queryset=UnitModel.objects.all(),  # ✅ الآن ما فيش تضارب
+        queryset=UnitModel.objects.all(),
         source='unit',
         write_only=True
     )
@@ -24,8 +24,8 @@ class UnitServiceSerializer(serializers.ModelSerializer):
         many=True,
         queryset=Staff.objects.all(),
         source='orgnization_structure',
-        required=False,
-        write_only=True
+        write_only=True,
+        required=True
     )
 
     class Meta:
@@ -35,7 +35,7 @@ class UnitServiceSerializer(serializers.ModelSerializer):
             'orgnization_structure', 'orgnization_structure_ids', 'unit_objectives'
         ]
 
-    def validate_abou_unit(self, value):
+    def validate_about_unit(self, value):
         if not value:
             raise serializers.ValidationError("about_unit is required.")
         return value
