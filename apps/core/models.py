@@ -1,7 +1,6 @@
 from django.db import models
 
 from django.conf import settings
-from cloudinary.models import CloudinaryField
 
 class VisionMission(models.Model):
     title = models.CharField(max_length=255)
@@ -43,8 +42,8 @@ class Collegeleaders(models.Model):
     position = models.CharField(max_length=255)
     name= models.CharField(max_length=255)
     content = models.TextField()
-    image = CloudinaryField('image', blank=True, null=True)  
-    cv= CloudinaryField('cv', blank=True, null=True)
+    image = models.ImageField(upload_to='Collegeleaders/', blank=True, null=True)  
+    cv= models.FileField(upload_to='Collegeleaders/', blank=True, null=True)
     def __str__(self):                                                          
         return self.position 
     
