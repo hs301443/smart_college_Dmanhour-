@@ -1,6 +1,7 @@
 from django.db import models
 
 from django.conf import settings
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 class VisionMission(models.Model):
     title = models.CharField(max_length=255)
@@ -42,8 +43,8 @@ class Collegeleaders(models.Model):
     position = models.CharField(max_length=255)
     name= models.CharField(max_length=255)
     content = models.TextField()
-    image = models.ImageField(upload_to='Collegeleaders/', blank=True, null=True)  
-    cv= models.FileField(upload_to='Collegeleaders/', blank=True, null=True)
+    image = models.ImageField(storage=MediaCloudinaryStorage(), blank=True, null=True)
+    cv = models.FileField(storage=MediaCloudinaryStorage(), blank=True, null=True)
     def __str__(self):                                                          
         return self.position 
     
