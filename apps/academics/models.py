@@ -17,7 +17,7 @@ class Department(models.Model):
 class SpecialProgram(models.Model):
     name = models.CharField(max_length=255)
     about = models.TextField()  # تغيير CharField إلى TextField
-    image = models.ImageField(upload_to='mastersprogram/', blank=True, null=True)
+    image = models.ImageField(upload_to='SpecialProgram/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
