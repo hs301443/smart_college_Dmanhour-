@@ -90,14 +90,21 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         fields = ['id', 'position', 'name', 'content', 'image', 'cv']
 
     def get_image(self, obj):
-        if obj.image:
-            return obj.image.url  # دي هترجع رابط Cloudinary لو مظبوط
-        return None
+     request = self.context.get('request')
+     if obj.image:
+        if request:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
+     return None
 
     def get_cv(self, obj):
-        if obj.cv:
-            return obj.cv.url
-        return None
+       request = self.context.get('request')
+       if obj.cv:
+        if request:
+            return request.build_absolute_uri(obj.cv.url)
+        return obj.cv.url
+       return None
+
 
     def validate_name(self, value):
         if not value.strip():

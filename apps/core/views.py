@@ -175,9 +175,10 @@ class StatisticsView(APIView):
 
 class CollegeLeadersView(APIView):
     def get(self, request):
-        queryset = core_models.Collegeleaders.objects.all()
-        serializer = core_serializer.CollegeleadersSerializer(queryset, many=True)
-        return Response(serializer.data)
+     queryset = core_models.Collegeleaders.objects.all()
+     serializer = core_serializer.CollegeleadersSerializer(queryset, many=True, context={'request': request})
+     return Response(serializer.data)
+
 
     def post(self, request):
         if not IsAuth(request):
