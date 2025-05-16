@@ -37,4 +37,5 @@ urlpatterns = [
     path('users/', include('apps.users.urls')),
    path('academics/', include('apps.academics.urls')),
 
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
