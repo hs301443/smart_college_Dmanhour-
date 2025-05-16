@@ -4,6 +4,7 @@ from rest_framework import status
 from . import models as core_models
 from . import serializers as core_serializer
 from project.shortcuts import get_object_or_404, IsAuth, has_permission
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class VisionMissionView(APIView):
     def get(self, request):
@@ -174,11 +175,12 @@ class StatisticsView(APIView):
         return Response(status=204)
 
 class CollegeLeadersView(APIView):
-    def get(self, request):
-     queryset = core_models.Collegeleaders.objects.all()
-     serializer = core_serializer.CollegeleadersSerializer(queryset, many=True, context={'request': request})
-     return Response(serializer.data)
+    parser_classes = (MultiPartParser, FormParser)  # <== هنا
 
+    def get(self, request):
+        queryset = core_models.Collegeleaders.objects.all()
+        serializer = core_serializer.CollegeleadersSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         if not IsAuth(request):
@@ -187,6 +189,7 @@ class CollegeLeadersView(APIView):
             return Response({"detail": "Permission denied"}, status=403)
 
         serializer = core_serializer.CollegeleadersSerializer(data=request.data, context={'request': request})
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
@@ -199,8 +202,7 @@ class CollegeLeadersView(APIView):
             return Response({"detail": "Permission denied"}, status=403)
 
         instance = get_object_or_404(core_models.Collegeleaders, pk=pk)
-        serializer = core_serializer.CollegeleadersSerializer(data=request.data, context={'request': request})
-
+        serializer = core_serializer.CollegeleadersSerializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
