@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-        'import_export',
-        'cloudinary',
+    'import_export',
+    'cloudinary',
     'cloudinary_storage',
 
     
@@ -179,8 +179,8 @@ SIMPLE_JWT = {
 import os
 
 # إعداد المسار لحفظ الملفات المرفوعة
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = BASE_DIR / 'media'
 
 
 
