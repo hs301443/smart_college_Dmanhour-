@@ -90,10 +90,21 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         fields = ['id', 'position', 'name', 'content', 'image', 'cv']
 
     def get_image(self, obj):
-        return obj.image.url if obj.image else None
+      request = self.context.get('request')
+      if obj.image and request:
+        return request.build_absolute_uri(obj.image.url)
+      elif obj.image:
+        return obj.image.url
+      return None
 
     def get_cv(self, obj):
-        return obj.cv.url if obj.cv else None
+     request = self.context.get('request')
+     if obj.cv and request:
+        return request.build_absolute_uri(obj.cv.url)
+     elif obj.cv:
+        return obj.cv.url
+     return None
+
 
     def validate_name(self, value):
         if not value.strip():
