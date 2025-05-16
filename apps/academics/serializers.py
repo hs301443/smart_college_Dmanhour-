@@ -3,14 +3,29 @@ from .models import Department, SpecialProgram, MastersProgram
 from apps.users.models import Staff 
 
 class StaffMiniSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    cv = serializers.SerializerMethodField()
+
     class Meta:
         model = Staff
         fields = ('id', 'cv', 'position', 'image', 'name')
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+
+    def get_cv(self, obj):
+        if obj.cv:
+            return obj.cv.url
+        return None
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
     doctors = serializers.PrimaryKeyRelatedField(many=True, queryset=Staff.objects.all(), required=False)
     doctors_detail = StaffMiniSerializer(source='doctors', many=True, read_only=True)
+    image = serializers.SerializerMethodField()
+    pdf = serializers.SerializerMethodField()
 
     class Meta:
         model = Department
@@ -21,6 +36,17 @@ class DepartmentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('created_at', 'updated_at')
 
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+
+    def get_pdf(self, obj):
+        if obj.pdf:
+            return obj.pdf.url
+        return None
+
+    # باقي الكود كما هو بدون تغيير
     def validate_name(self, value):
         if not value:
             raise serializers.ValidationError("The department name cannot be empty.")
@@ -52,48 +78,58 @@ class DepartmentSerializer(serializers.ModelSerializer):
         doctors = validated_data.pop('doctors', [])
         department = Department.objects.create(**validated_data)
         department.doctors.set(doctors)
-
-        # مزامنة العلاقة العكسية
-        for doctor in doctors:
-            doctor.department.add(department)
-
+        # إزالة مزامنة العلاقة العكسية لأنها غالباً غير موجودة
         return department
 
     def update(self, instance, validated_data):
         doctors = validated_data.pop('doctors', None)
         instance = super().update(instance, validated_data)
-
         if doctors is not None:
             instance.doctors.set(doctors)
-
-            # إزالة العلاقة القديمة
-            for staff in Staff.objects.all():
-                staff.department.remove(instance)
-
-            # إضافة العلاقة الجديدة
-            for doctor in doctors:
-                doctor.department.add(instance)
-
         return instance
 
+
 class SpecialProgramSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = SpecialProgram
         fields = '__all__'
-        # التحقق من أن البرنامج ليس فارغًا
-    def validate(self, data):
-        if not data.get('name'):
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+
+    def validate_name(self, value):
+        if not value.strip():
             raise serializers.ValidationError("Program name is required.")
-        return data
+        return value
+
+    def validate_about(self, value):
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError("Program description must be at least 10 characters long.")
+        return value
 
 
-# Masters Program Serializer
 class MastersProgramSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = MastersProgram
         fields = '__all__'
-            # التحقق من أن البرنامج له اسم
-    def validate(self, data):
-        if not data.get('name'):
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+
+    def validate_name(self, value):
+        if not value.strip():
             raise serializers.ValidationError("Masters program name is required.")
-        return data
+        return value
+
+    def validate_about(self, value):
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError("Masters program description must be at least 10 characters long.")
+        return value

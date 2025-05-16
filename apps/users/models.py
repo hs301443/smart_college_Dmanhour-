@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-
+from cloudinary_storage.storage import MediaCloudinaryStorage
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     USER_TYPE_CHOICES = (
@@ -50,8 +49,8 @@ class Graduation(models.Model):
 class Staff(models.Model):
     name= models.CharField(max_length=100)
     position= models.CharField(max_length=100)
-    cv= models.FileField(upload_to='staff_cvs/', blank=True, null=True)
-    image= models.ImageField(upload_to='staff_images/', blank=True, null=True)
+    cv= models.FileField(storage=MediaCloudinaryStorage(),upload_to='dmanour/staff_cvs/', blank=True, null=True)
+    image= models.ImageField(storage=MediaCloudinaryStorage(),upload_to='dmanour/staff_images/', blank=True, null=True)
     department=models.ManyToManyField('academics.Department', blank=True, related_name='staffs')
     units=models.ManyToManyField('units.unit', blank=True, related_name='staffs')
 

@@ -6,6 +6,8 @@ from .models import Notification
 from apps.users.models import CustomUser
 
 class StudentprtalSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Studentprtal
         fields = '__all__'
@@ -17,6 +19,8 @@ class StudentprtalSerializer(serializers.ModelSerializer):
         if qs.exists():
             raise serializers.ValidationError("This title already exists")
         return value
+    def get_image(self, obj):
+        return self._abs_url(obj.image) if obj.image else None
 
 
 

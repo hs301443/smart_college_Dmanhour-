@@ -3,9 +3,12 @@ from .models import unit as UnitModel, UnitService
 from apps.users.models import Staff
 
 class UnitSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     class Meta:
         model = UnitModel
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'image', 'description']
+    def get_image(self, obj):
+        return self._abs_url(obj.image) if obj.image else None   
 
 class StaffMiniSerializer(serializers.ModelSerializer):
     class Meta:
