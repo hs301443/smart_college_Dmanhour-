@@ -16,9 +16,6 @@ load_dotenv()
 import os
 import dj_database_url
 import cloudinary_storage
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,10 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default= True, cast=bool)
+DEBUG = config('DEBUG', default= False, cast=bool)
 
-ALLOWED_HOSTS = [ ]
-#CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app']
+ALLOWED_HOSTS = ['smartcollegedmanhour-production.up.railway.app','localhost' ]
+CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app']
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',  # تأكد إنها مضافة
+    'django.contrib.staticfiles',
     'import_export',
     'cloudinary',
     'cloudinary_storage',
@@ -185,11 +182,10 @@ SIMPLE_JWT = {
 
 
 # إعدادات Cloudinary
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
 'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
 'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
     }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
