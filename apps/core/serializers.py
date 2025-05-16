@@ -10,10 +10,15 @@ from django.utils.translation import gettext_lazy as _
 # Serializers
 
 class VisionMissionSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = core_models.VisionMission
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
+
+    def get_image(self, obj):
+        return obj.image.url if obj.image else None
 
     def validate_title(self, value):
         if len(value.strip()) < 3:
@@ -25,19 +30,32 @@ class VisionMissionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("content must be at least 10 characters long.")
         return value
 
+
         
 class SliderSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
-        
         model = core_models.slider
         fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at']        
+        read_only_fields = ['created_at', 'updated_at']
+
+    def get_image(self, obj):
+        return obj.image.url if obj.image else None
+
+        
+               
 
 class FacultyInfoSerializer(serializers.ModelSerializer):
+    video = serializers.SerializerMethodField()
+
     class Meta:
         model = core_models.FacultyInfo
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
+
+    def get_video(self, obj):
+        return obj.video.url if obj.video else None
 
     def validate_title(self, value):
         if not value.strip():
@@ -48,6 +66,7 @@ class FacultyInfoSerializer(serializers.ModelSerializer):
         if len(value.strip()) < 10:
             raise serializers.ValidationError("content must be at least 10 characters long.")
         return value
+
 
         
 class StatisticsSerializer(serializers.ModelSerializer):
@@ -64,9 +83,18 @@ class StatisticsSerializer(serializers.ModelSerializer):
         
         
 class CollegeleadersSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    cv = serializers.SerializerMethodField()
+
     class Meta:
         model = core_models.Collegeleaders
         fields = ['id', 'position', 'name', 'content', 'image', 'cv']
+
+    def get_image(self, obj):
+        return obj.image.url if obj.image else None
+
+    def get_cv(self, obj):
+        return obj.cv.url if obj.cv else None
 
     def validate_name(self, value):
         if not value.strip():
@@ -86,14 +114,9 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
 
 
 
-
 #الشكاوى والمقترحات
 
 # apps/core/serializers.py
-
-# core/serializers.py
-
-# core/serializers.py
 
 from rest_framework import serializers
 from .models import Complaint
