@@ -5,7 +5,6 @@ from rest_framework import serializers
 from . import models as core_models
 from project.shortcuts import IsAuth
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
 
 # Serializers
 

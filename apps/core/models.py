@@ -5,7 +5,7 @@ from django.conf import settings
 class VisionMission(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
-    image = models.ImageField(upload_to='media/faculty_info/', blank=True, null=True)  
+    image = models.ImageField(upload_to='faculty_info/', blank=True, null=True)  
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
