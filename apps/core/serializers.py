@@ -80,31 +80,19 @@ class StatisticsSerializer(serializers.ModelSerializer):
         return data
 
         
-        
+  
 class CollegeleadersSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-    cv = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
+    cv = serializers.FileField(use_url=True)
 
     class Meta:
         model = core_models.Collegeleaders
-        fields = ['id', 'position', 'name', 'content', 'image', 'cv']
+        fields ='__all__'
 
     def get_image(self, obj):
-      request = self.context.get('request')
-      if obj.image and request:
-        return request.build_absolute_uri(obj.image.url)
-      elif obj.image:
-        return obj.image.url
-      return None
-
+        return self._abs_url(obj.image) if obj.image else None
     def get_cv(self, obj):
-     request = self.context.get('request')
-     if obj.cv and request:
-        return request.build_absolute_uri(obj.cv.url)
-     elif obj.cv:
-        return obj.cv.url
-     return None
-
+        return self._abs_url(obj.cv) if obj.cv else None
 
     def validate_name(self, value):
         if not value.strip():
@@ -120,16 +108,12 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         if len(value.strip()) < 15:
             raise serializers.ValidationError("content must be at least 15 characters long.")
         return value
-
-
-
-
 #الشكاوى والمقترحات
 
 # apps/core/serializers.py
 
 from rest_framework import serializers
-from .models import Complaint
+from .models import Collegeleaders, Complaint
 
 class ComplaintSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
