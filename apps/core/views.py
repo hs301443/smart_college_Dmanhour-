@@ -7,6 +7,8 @@ from project.shortcuts import get_object_or_404, IsAuth, has_permission
 from rest_framework.parsers import MultiPartParser, FormParser
 
 class VisionMissionView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def get(self, request):
         queryset = core_models.VisionMission.objects.all()
         serializer = core_serializer.VisionMissionSerializer(queryset, many=True)
@@ -21,8 +23,7 @@ class VisionMissionView(APIView):
         all_messions = core_models.VisionMission.objects.all()
         if len(all_messions) >= 2:
             return Response({"detail": "You can only add 2 Vision and Mission"}, status=403)
-
-        serializer = core_serializer.VisionMissionSerializer(data=request.data)
+        serializer = core_serializer.VisionMissionSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
@@ -35,11 +36,12 @@ class VisionMissionView(APIView):
             return Response({"detail": "Permission denied"}, status=403)
 
         instance = get_object_or_404(core_models.VisionMission, pk=pk)
-        serializer = core_serializer.VisionMissionSerializer(instance, data=request.data, partial=True)
+        serializer = core_serializer.VisionMissionSerializer(instance, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
 
     def delete(self, request, pk):
         if not IsAuth(request):
@@ -52,6 +54,8 @@ class VisionMissionView(APIView):
         return Response(status=204)
 
 class SliderView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def get(self, request):
         queryset = core_models.slider.objects.all()
         serializer = core_serializer.SliderSerializer(queryset, many=True)
@@ -63,7 +67,7 @@ class SliderView(APIView):
         if not has_permission("core.add_slider", request):
             return Response({"detail": "Permission denied"}, status=403)
 
-        serializer = core_serializer.SliderSerializer(data=request.data)
+        serializer = core_serializer.SliderSerializer(data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
@@ -76,7 +80,7 @@ class SliderView(APIView):
             return Response({"detail": "Permission denied"}, status=403)
 
         instance = get_object_or_404(core_models.slider, pk=pk)
-        serializer = core_serializer.SliderSerializer(instance, data=request.data, partial=True)
+        serializer = core_serializer.SliderSerializer(instance, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -93,6 +97,8 @@ class SliderView(APIView):
         return Response(status=204)
 
 class FacultyInfoView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def get(self, request):
         queryset = core_models.FacultyInfo.objects.all()
         serializer = core_serializer.FacultyInfoSerializer(queryset, many=True)
@@ -104,7 +110,7 @@ class FacultyInfoView(APIView):
         if not has_permission("core.add_facultyinfo", request):
             return Response({"detail": "Permission denied"}, status=403)
 
-        serializer = core_serializer.FacultyInfoSerializer(data=request.data)
+        serializer = core_serializer.FacultyInfoSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)

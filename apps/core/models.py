@@ -2,12 +2,13 @@ from django.db import models
 
 from django.conf import settings
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from cloudinary.models import CloudinaryField
 
 class VisionMission(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     image = models.ImageField(
-        upload_to='damanhour/Collegeleaders/images/',
+        upload_to='damanhour/VisionMission/images/',
         storage=MediaCloudinaryStorage(),
         blank=True, null=True,
     )
@@ -20,7 +21,7 @@ class VisionMission(models.Model):
 class slider(models.Model):
     title = models.CharField(max_length=255)
     image =models.ImageField(
-        upload_to='damanhour/Collegeleaders/images/',
+        upload_to='damanhour/slider/images/',
         storage=MediaCloudinaryStorage(),
         blank=True, null=True,
     )
@@ -33,7 +34,7 @@ class FacultyInfo(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     video = models.FileField(
-        upload_to='damanhour/Collegeleaders/pdfs/',
+        upload_to='damanhour/FacultyInfo/pdfs/',
         storage=MediaCloudinaryStorage(),
         blank=True, null=True,
     )
@@ -61,11 +62,7 @@ class Collegeleaders(models.Model):
         blank=True, null=True,
     )
     
-    pdf = models.FileField(
-        upload_to='damanhour/Collegeleaders/pdfs/',
-        storage=MediaCloudinaryStorage(),
-        blank=True, null=True,
-    )
+    cv=CloudinaryField(resource_type='raw',folder='damanour/collegeleaders/pdfs' ,blank=True, null=True)
 
 
     def __str__(self):                                                          

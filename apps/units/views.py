@@ -5,9 +5,12 @@ from rest_framework.views import APIView
 from project.shortcuts import IsAuth, has_permission
 from .models import unit, UnitService
 from .serializers import UnitSerializer, UnitServiceSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # API View للوحدات
 class UnitListCreateAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     # عرض جميع الوحدات
     def get(self, request):
         units = unit.objects.all()
@@ -20,7 +23,7 @@ class UnitListCreateAPIView(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = UnitSerializer(data=request.data)
+        serializer = UnitSerializer(data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -28,6 +31,8 @@ class UnitListCreateAPIView(APIView):
 
 # API View لوحدة معينة
 class UnitDetailAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     # عرض وحدة معينة
     def get(self, request, pk):
         try:
@@ -49,7 +54,7 @@ class UnitDetailAPIView(APIView):
         except unit.DoesNotExist:
             return Response({'error': 'Unit not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = UnitSerializer(unit_obj, data=request.data, partial=True)
+        serializer = UnitSerializer(unit_obj, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -83,7 +88,7 @@ class UnitServiceListCreateAPIView(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = UnitServiceSerializer(data=request.data)
+        serializer = UnitServiceSerializer(data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -112,7 +117,7 @@ class UnitServiceDetailAPIView(APIView):
         except UnitService.DoesNotExist:
             return Response({'error': 'Service not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = UnitServiceSerializer(service, data=request.data, partial=True)
+        serializer = UnitServiceSerializer(service, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

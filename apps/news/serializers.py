@@ -17,7 +17,7 @@ class NewImageSerializer(serializers.ModelSerializer):
 
 
 class NewVideoSerializer(serializers.ModelSerializer):
-    video = serializers.SerializerMethodField()
+    video = serializers.ImageField(use_url=True)
 
     class Meta:
         model = NewVideo
@@ -48,7 +48,7 @@ class NewsArticleSerializer(serializers.ModelSerializer):
     images = NewImageSerializer(many=True, read_only=True)
     videos = NewVideoSerializer(many=True, read_only=True)
     pdfs = NewsPdfSerializer(many=True, read_only=True)
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
 
     class Meta:
         model = NewsArticle
@@ -61,11 +61,7 @@ class NewsArticleSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['created_at', 'updated_at']
 
-    def get_image(self, obj):
-        request = self.context.get('request')
-        if obj.image and hasattr(obj.image, 'url'):
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+    
 
     def validate_title(self, value):
         if not value:

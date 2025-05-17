@@ -9,8 +9,7 @@ from django.utils import timezone
 # Serializers
 
 class VisionMissionSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-
+    image = serializers.ImageField(use_url=True)
     class Meta:
         model = core_models.VisionMission
         fields = '__all__'
@@ -32,15 +31,14 @@ class VisionMissionSerializer(serializers.ModelSerializer):
 
         
 class SliderSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
 
     class Meta:
         model = core_models.slider
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
 
-    def get_image(self, obj):
-        return obj.image.url if obj.image else None
+   
 
         
                
@@ -81,18 +79,16 @@ class StatisticsSerializer(serializers.ModelSerializer):
 
         
   
+
+
+
 class CollegeleadersSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
     cv = serializers.FileField(use_url=True)
 
     class Meta:
         model = core_models.Collegeleaders
-        fields ='__all__'
-
-    def get_image(self, obj):
-        return self._abs_url(obj.image) if obj.image else None
-    def get_cv(self, obj):
-        return self._abs_url(obj.cv) if obj.cv else None
+        fields = '__all__'
 
     def validate_name(self, value):
         if not value.strip():
@@ -108,6 +104,23 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         if len(value.strip()) < 15:
             raise serializers.ValidationError("content must be at least 15 characters long.")
         return value
+
+
+    def validate_name(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("name is required.")
+        return value
+
+    def validate_position(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("position is required.")
+        return value
+
+    def validate_content(self, value):
+        if len(value.strip()) < 15:
+            raise serializers.ValidationError("content must be at least 15 characters long.")
+        return value
+
 #الشكاوى والمقترحات
 
 # apps/core/serializers.py

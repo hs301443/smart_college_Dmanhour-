@@ -13,9 +13,9 @@ urlpatterns = [
     path('graduation/update/<int:graduation_id>/', GraduationView.as_view(), name='graduation-update'),
     path('graduation/<int:graduation_id>/', GraduationView.as_view(), name='graduation-info'),
     
-    path('staff/', StaffView.as_view(), name='staff-create'),
-    path('staff/update/<int:staff_id>/', StaffView.as_view(), name='staff-update'),
-    path('staff/<int:staff_id>/', StaffView.as_view(), name='staff-info'),
+    path('staff/', StaffView.as_view()),  # لو هتجيب الكل أو تعمل POST
+    path('staff/<int:staff_id>/', StaffView.as_view()),  # لو هتجيب واحد أو تعمل PATCH
+
 
 ]
 

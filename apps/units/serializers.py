@@ -3,7 +3,7 @@ from .models import unit as UnitModel, UnitService
 from apps.users.models import Staff
 
 class UnitSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
     class Meta:
         model = UnitModel
         fields = ['id', 'name', 'image', 'description']

@@ -97,8 +97,8 @@ class UnitSerializers(serializers.ModelSerializer):
 
 
 class StaffSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-    cv = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
+    cv = serializers.FileField(use_url=True, required=False)
     department_detail = DepartmentBasicSerializer(source='department', many=True, read_only=True)
     unit_detail=UnitSerializers(source='units', many=True, read_only=True)
     class Meta:
@@ -133,14 +133,8 @@ class StaffSerializer(serializers.ModelSerializer):
         if not data.get('position'):
             raise serializers.ValidationError("Position cannot be empty.")
         return data
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
-    def get_cv(self, obj):
-        if obj.cv:
-            return obj.cv.url
-        return None
+    
+    
 
 
 

@@ -5,9 +5,12 @@ from rest_framework.views import APIView
 from project.shortcuts import IsAuth, has_permission
 from .models import section
 from .serializers import SectionSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
+    
 
 # API View للوحدات
 class SectionListCreateAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
     def get(self, request):
         sections = section.objects.all()
         serializer = SectionSerializer(sections, many=True)
@@ -18,13 +21,15 @@ class SectionListCreateAPIView(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = SectionSerializer(data=request.data)
+        serializer = SectionSerializer(data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SectionDetailAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def get(self, request, pk):
         try:
             section_obj = section.objects.get(pk=pk)
@@ -44,7 +49,7 @@ class SectionDetailAPIView(APIView):
         except section.DoesNotExist:
             return Response({'error': 'Section not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = SectionSerializer(section_obj, data=request.data, partial=True)
+        serializer = SectionSerializer(section_obj, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

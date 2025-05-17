@@ -109,29 +109,35 @@ class GraduationView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class StaffView(APIView):
+    parser_classes = [MultiPartParser, FormParser]    
+
     def post(self, request):
         if not IsAuth(request):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = StaffSerializer(data=request.data)
+        serializer = StaffSerializer(data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             staff = serializer.save()
             return Response({
                 "message": "Staff member created successfully.",
-                "staff": StaffSerializer(staff).data  # رجع بيانات الـ staff الجديد
+                "staff": StaffSerializer(staff).data
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-    def get(self, request, staff_id):
-        
-        staff = get_object_or_404(Staff, id=staff_id)
-        serializer = StaffSerializer(staff)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request, staff_id=None):
+        if staff_id:
+            staff = get_object_or_404(Staff, id=staff_id)
+            serializer = StaffSerializer(staff)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            staff_list = Staff.objects.all()
+            serializer = StaffSerializer(staff_list, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, staff_id):
         if not IsAuth(request):
@@ -139,15 +145,13 @@ class StaffView(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
         staff = get_object_or_404(Staff, id=staff_id)
-        serializer = StaffSerializer(staff, data=request.data, partial=True)
- 
+        serializer = StaffSerializer(staff, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response({
                 "message": "Staff member updated successfully.",
                 "staff_data": serializer.data
             }, status=status.HTTP_200_OK)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

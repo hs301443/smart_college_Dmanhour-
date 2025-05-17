@@ -6,7 +6,7 @@ from .models import section, acadmic_year
 #   Section  Serializer
 # ────────────────────────────
 class SectionSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
     pdf   = serializers.SerializerMethodField()
 
     class Meta:
@@ -39,12 +39,7 @@ class SectionSerializer(serializers.ModelSerializer):
         return value
 
     # ─── URL helpers ────────────────────────────────────────────────────────
-    def _abs_url(self, file):
-        request = self.context.get("request")
-        return request.build_absolute_uri(file.url) if request else file.url
-
-    def get_image(self, obj):
-        return self._abs_url(obj.image) if obj.image else None
+    
 
     def get_pdf(self, obj):
         return self._abs_url(obj.pdf) if obj.pdf else None

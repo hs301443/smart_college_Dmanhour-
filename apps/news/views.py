@@ -5,8 +5,11 @@ from rest_framework import status
 from project.shortcuts import IsAuth, get_object_or_404, has_permission
 from . import models as news_models
 from . import serializers as news_serializers
-
+from rest_framework.parsers import MultiPartParser, FormParser
+\
 class NewsArticleView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
 
     def get(self, request, article_id=None):
         """
@@ -29,7 +32,7 @@ class NewsArticleView(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = news_serializers.NewsArticleSerializer(data=request.data)
+        serializer = news_serializers.NewsArticleSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -44,7 +47,7 @@ class NewsArticleView(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
         article = get_object_or_404(news_models.NewsArticle, id=article_id)
-        serializer = news_serializers.NewsArticleSerializer(article, data=request.data, partial=True)
+        serializer = news_serializers.NewsArticleSerializer(article, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -65,7 +68,7 @@ class NewsArticleView(APIView):
 # ----------------------------------------------------------
 
 class NewImage(APIView):
-
+    parser_classes = [MultiPartParser, FormParser]
     def get(self, request, image_id=None, new_id=None):
         """
         Get a specific news image by ID or by news article ID.
@@ -92,7 +95,7 @@ class NewImage(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = news_serializers.NewImageSerializer(data=request.data)
+        serializer = news_serializers.NewImageSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -107,7 +110,7 @@ class NewImage(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
         image = get_object_or_404(news_models.NewImage, id=image_id)
-        serializer = news_serializers.NewImageSerializer(image, data=request.data, partial=True)
+        serializer = news_serializers.NewImageSerializer(image, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -197,17 +200,17 @@ class NewPDFView(APIView):
         """
 
         if pdf_id:
-            pdf = get_object_or_404(news_models.NewPDF, id=pdf_id)
-            serializer = news_serializers.NewPDFSerializer(pdf)
+            pdf = get_object_or_404(news_models.NewsPdf, id=pdf_id)
+            serializer = news_serializers.NewsPdfSerializer(pdf)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         if new_id:
-            pdfs = news_models.NewPDF.objects.filter(news_article=new_id)
-            serializer = news_serializers.NewPDFSerializer(pdfs, many=True)
+            pdfs = news_models.NewsPdf.objects.filter(news_article=new_id)
+            serializer = news_serializers.NewsPdfSerializer(pdfs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        pdfs = news_models.NewPDF.objects.all()
-        serializer = news_serializers.NewPDFSerializer(pdfs, many=True)
+        pdfs = news_models.NewsPdf.objects.all()
+        serializer = news_serializers.NewsPdfSerializer(pdfs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: Request) -> Response:
@@ -236,7 +239,7 @@ class NewPDFView(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
 
-        pdf = get_object_or_404(news_models.NewPDF, id=pdf_id)
+        pdf = get_object_or_404(news_models.NewsPdf, id=pdf_id)
         serializer = news_serializers.NewsPdfSerializer(pdf, data=request.data, partial=True)
 
         if serializer.is_valid():
@@ -254,6 +257,6 @@ class NewPDFView(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
 
-        pdf = get_object_or_404(news_models.NewPDF, id=pdf_id)
+        pdf = get_object_or_404(news_models.NewsPdf, id=pdf_id)
         pdf.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

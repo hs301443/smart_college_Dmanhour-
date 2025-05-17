@@ -3,28 +3,21 @@ from .models import Department, SpecialProgram, MastersProgram
 from apps.users.models import Staff 
 
 class StaffMiniSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
     cv = serializers.SerializerMethodField()
 
     class Meta:
         model = Staff
         fields = ('id', 'cv', 'position', 'image', 'name')
 
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
-
-    def get_cv(self, obj):
-        if obj.cv:
-            return obj.cv.url
-        return None
+    
+    
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
     doctors = serializers.PrimaryKeyRelatedField(many=True, queryset=Staff.objects.all(), required=False)
     doctors_detail = StaffMiniSerializer(source='doctors', many=True, read_only=True)
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
     pdf = serializers.SerializerMethodField()
 
     class Meta:
@@ -36,10 +29,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('created_at', 'updated_at')
 
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
+    
 
     def get_pdf(self, obj):
         if obj.pdf:
@@ -90,17 +80,13 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class SpecialProgramSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
 
     class Meta:
         model = SpecialProgram
         fields = '__all__'
 
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
-
+    
     def validate_name(self, value):
         if not value.strip():
             raise serializers.ValidationError("Program name is required.")
@@ -113,16 +99,13 @@ class SpecialProgramSerializer(serializers.ModelSerializer):
 
 
 class MastersProgramSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
 
     class Meta:
         model = MastersProgram
         fields = '__all__'
 
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
+    
 
     def validate_name(self, value):
         if not value.strip():

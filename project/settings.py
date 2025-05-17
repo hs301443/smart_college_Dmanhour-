@@ -27,10 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default= False, cast=bool)
+DEBUG = config('DEBUG', default= True, cast=bool)
 
-ALLOWED_HOSTS = ['smartcollegedmanhour-production.up.railway.app/','localhost' ]
-CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app/']
+ALLOWED_HOSTS = [ ]
+#CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app/']
 # Application definition
 
 INSTALLED_APPS = [
@@ -186,6 +186,7 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
-'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
-'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+   'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+   'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    
     }

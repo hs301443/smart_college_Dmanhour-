@@ -9,8 +9,11 @@ from project.shortcuts import IsAuth, has_permission
 from .models import Studentprtal
 from .serializers import StudentprtalSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class StudentPortalAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def get(self, request, pk=None):
         if pk:
             portal = get_object_or_404(Studentprtal, pk=pk)
@@ -26,7 +29,7 @@ class StudentPortalAPIView(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
 
-        serializer = StudentprtalSerializer(data=request.data)
+        serializer = StudentprtalSerializer(data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -39,7 +42,7 @@ class StudentPortalAPIView(APIView):
             return Response({"detail": "Permission denied"}, status=403)
 
         portal = get_object_or_404(Studentprtal, pk=pk)
-        serializer = StudentprtalSerializer(portal, data=request.data, partial=True)
+        serializer = StudentprtalSerializer(portal, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
