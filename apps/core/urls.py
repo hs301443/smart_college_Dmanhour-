@@ -1,7 +1,13 @@
 from django.urls import path
 from . import views
+from django.http import JsonResponse
+
+def core_root_view(request):
+    return JsonResponse({"message": "Welcome to Smart College CORE API 🎓"})
 
 urlpatterns = [
+    path('', core_root_view, name='core-root'),
+
     # API URLs for VisionMission
     path('vision-mission/', views.VisionMissionView.as_view(), name='vision-mission-list'),
     path('vision-mission/<int:pk>/', views.VisionMissionView.as_view(), name='vision-mission-detail'),
