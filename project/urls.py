@@ -20,14 +20,9 @@ from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from rest_framework import permissions
 
-from project import settings
 
-
-def root_view(request):
-    return JsonResponse({"message": "Welcome to Smart College API 🚀"})
 
 urlpatterns = [
-       path('', root_view),  
     path('admin/', admin.site.urls),
     path('core/', include('apps.core.urls')),
     path('units/', include('apps.units.urls')),
