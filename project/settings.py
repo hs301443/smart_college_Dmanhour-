@@ -19,6 +19,8 @@ import cloudinary_storage
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import os
+PORT = os.environ.get('PORT', 8000)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -30,7 +32,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default= False, cast=bool)
 
 ALLOWED_HOSTS = ['smartcollegedmanhour-production.up.railway.app','localhost' ]
-CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app/']
+CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app/',]
 # Application definition
 
 INSTALLED_APPS = [
