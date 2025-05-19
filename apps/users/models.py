@@ -33,7 +33,7 @@ class Graduation(models.Model):
     ]
 
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='graduation_info')
-    cv = models.FileField(upload_to='cvs/')
+    cv = CloudinaryField(resource_type='raw',folder='damanour/Graduation/pdfs' ,blank=True, null=True)
     employment_status = models.CharField(max_length=100, choices=EMPLOYMENT_CHOICES)
     job_name = models.CharField(max_length=100, blank=True)
     location = models.CharField(max_length=100, blank=True)
@@ -55,7 +55,6 @@ class Staff(models.Model):
         resource_type='raw', 
         folder='damanhour/Staff/pdfs',
         blank=True, null=True,
-        type='upload',
         overwrite=True,
         )
     image= models.ImageField(storage=MediaCloudinaryStorage(),upload_to='damanhour/staff_images/', blank=True, null=True)

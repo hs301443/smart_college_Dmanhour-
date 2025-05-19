@@ -44,15 +44,13 @@ class SliderSerializer(serializers.ModelSerializer):
                
 
 class FacultyInfoSerializer(serializers.ModelSerializer):
-    video = serializers.SerializerMethodField()
-
+    video = serializers.FileField(use_url=True, required=False)
     class Meta:
         model = core_models.FacultyInfo
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
 
-    def get_video(self, obj):
-        return obj.video.url if obj.video else None
+    
 
     def validate_title(self, value):
         if not value.strip():

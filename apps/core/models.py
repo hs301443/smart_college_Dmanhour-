@@ -33,11 +33,12 @@ class slider(models.Model):
 class FacultyInfo(models.Model):  
     title = models.CharField(max_length=255)
     content = models.TextField()
-    video = models.FileField(
-        upload_to='damanhour/FacultyInfo/pdfs/',
-        storage=MediaCloudinaryStorage(),
-        blank=True, null=True,
+    video = CloudinaryField(
+        resource_type='video',
+        folder='damanhour/FacultyInfo/videos/',
+        blank=True, null=True
     )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

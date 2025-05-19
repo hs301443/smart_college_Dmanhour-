@@ -1,7 +1,7 @@
 from cloudinary_storage.storage import MediaCloudinaryStorage
 from django.db import models
 from apps.units.models import unit
-
+from cloudinary.models import CloudinaryField
 class NewImage(models.Model):
     image = models.ImageField(upload_to='damanhour/news/images/', storage=MediaCloudinaryStorage())
     news_article = models.ForeignKey('NewsArticle', related_name='images', on_delete=models.CASCADE)
@@ -10,7 +10,11 @@ class NewImage(models.Model):
         return f"Image for {self.news_article.title}"
     
 class NewVideo(models.Model):
-    video = models.FileField(upload_to='damanhour/news/videos/', storage=MediaCloudinaryStorage())
+    video = CloudinaryField(
+        resource_type='video',
+        folder='damanhour/news/videos/',
+        blank=True, null=True
+    )
     news_article = models.ForeignKey('NewsArticle', related_name='videos', on_delete=models.CASCADE)
 
     def __str__(self):

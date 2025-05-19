@@ -120,7 +120,8 @@ class StaffView(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = StaffSerializer(data=request.data, partial=True, context={"request": request})
+        serializer = StaffSerializer(data=request.data, context={"request": request})
+        
         if serializer.is_valid():
             staff = serializer.save()
             return Response({

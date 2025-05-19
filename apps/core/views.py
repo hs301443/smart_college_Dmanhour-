@@ -110,7 +110,7 @@ class FacultyInfoView(APIView):
         if not has_permission("core.add_facultyinfo", request):
             return Response({"detail": "Permission denied"}, status=403)
 
-        serializer = core_serializer.FacultyInfoSerializer(data=request.data, partial=True)
+        serializer = core_serializer.FacultyInfoSerializer(data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
@@ -123,7 +123,7 @@ class FacultyInfoView(APIView):
             return Response({"detail": "Permission denied"}, status=403)
 
         instance = get_object_or_404(core_models.FacultyInfo, pk=pk)
-        serializer = core_serializer.FacultyInfoSerializer(instance, data=request.data, partial=True)
+        serializer = core_serializer.FacultyInfoSerializer(instance, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

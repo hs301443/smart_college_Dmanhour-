@@ -3,31 +3,23 @@ from .models import NewImage, NewVideo, NewsPdf, NewsArticle
 from datetime import datetime
 
 class NewImageSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(use_url=True)
 
     class Meta:
         model = NewImage
         fields = ['id', 'image', 'news_article']
 
-    def get_image(self, obj):
-        request = self.context.get('request')
-        if obj.image and hasattr(obj.image, 'url'):
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+    
 
 
 class NewVideoSerializer(serializers.ModelSerializer):
-    video = serializers.ImageField(use_url=True)
+    video = serializers.FileField(use_url=True)
 
     class Meta:
         model = NewVideo
         fields = ['id', 'video', 'news_article']
 
-    def get_video(self, obj):
-        request = self.context.get('request')
-        if obj.video and hasattr(obj.video, 'url'):
-            return request.build_absolute_uri(obj.video.url) if request else obj.video.url
-        return None
+    
 
 
 class NewsPdfSerializer(serializers.ModelSerializer):

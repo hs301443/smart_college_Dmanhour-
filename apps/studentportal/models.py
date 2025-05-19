@@ -7,7 +7,7 @@ class Studentprtal(models.Model):
     types=models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     content = models.TextField()
-    image = models.ImageField(storage=MediaCloudinaryStorage(),upload_to='dmanour/Studentportal/', blank=True, null=True)  
+    image = models.ImageField(storage=MediaCloudinaryStorage(),upload_to='damanhour/Studentportal/', blank=True, null=True)  
     link = models.URLField(max_length=255, blank=True, null=True) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
