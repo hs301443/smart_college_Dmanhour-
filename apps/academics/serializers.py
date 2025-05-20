@@ -18,7 +18,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
     doctors = serializers.PrimaryKeyRelatedField(many=True, queryset=Staff.objects.all(), required=False)
     doctors_detail = StaffMiniSerializer(source='doctors', many=True, read_only=True)
     image = serializers.ImageField(use_url=True)
-    pdf = serializers.SerializerMethodField()
+    pdf = serializers.FileField(use_url=True)
 
     class Meta:
         model = Department
