@@ -159,7 +159,10 @@ class NewVideo(APIView):
             return Response({"detail": "Authentication required"}, status=401)
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
-        serializer = news_serializers.NewVideoSerializer(data=request.data, context={"request": request})
+        data = request.data.copy()
+        files = request.FILES
+
+        serializer = news_serializers.NewVideoSerializer(data=data, files=files, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -174,7 +177,9 @@ class NewVideo(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
         video = get_object_or_404(news_models.NewVideo, id=video_id)
-        serializer = news_serializers.NewVideoSerializer(video, data=request.data, partial=True, context={"request": request})
+        data = request.data.copy()
+        files = request.FILES
+        serializer = news_serializers.NewVideoSerializer(video, data=data, files=files, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
