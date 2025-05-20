@@ -4,7 +4,7 @@ from apps.users.models import Staff
 
 class StaffMiniSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
-    cv = serializers.SerializerMethodField()
+    cv = serializers.FileField(use_url=True)
 
     class Meta:
         model = Staff
@@ -31,10 +31,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
     
 
-    def get_pdf(self, obj):
-        if obj.pdf:
-            return obj.pdf.url
-        return None
+   
 
     # باقي الكود كما هو بدون تغيير
     def validate_name(self, value):
