@@ -82,6 +82,8 @@ from .serializers import AcademicYearSerializer
 from django.shortcuts import get_object_or_404
 
 class AcademicYearListCreateAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def get(self, request):
         academic_years = acadmic_year.objects.all()
         serializer = AcademicYearSerializer(academic_years, many=True, context={'request': request})
@@ -99,6 +101,8 @@ class AcademicYearListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AcademicYearDetailAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
     def get_object(self, pk):
         return get_object_or_404(acadmic_year, pk=pk)
 

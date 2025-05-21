@@ -7,7 +7,7 @@ from .models import section, acadmic_year
 # ────────────────────────────
 class SectionSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
-    pdf   = serializers.SerializerMethodField()
+    pdf   = serializers.FileField(use_url=True)
 
     class Meta:
         model  = section
@@ -50,10 +50,10 @@ class SectionSerializer(serializers.ModelSerializer):
 #   Academic Year Serializer
 # ────────────────────────────
 class AcademicYearSerializer(serializers.ModelSerializer):
-    lecture_schedule = serializers.SerializerMethodField()
-    practical_exam   = serializers.SerializerMethodField()
-    exam             = serializers.SerializerMethodField()
-    seating_number   = serializers.SerializerMethodField()
+    lecture_schedule = serializers.FileField(use_url=True)
+    practical_exam   = serializers.FileField(use_url=True)
+    exam             = serializers.FileField(use_url=True)
+    seating_number   = serializers.FileField(use_url=True)
 
     class Meta:
         model  = acadmic_year
