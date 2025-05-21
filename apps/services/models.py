@@ -15,8 +15,8 @@ class section(models.Model):
     )
     link = models.URLField(blank=True, null=True)
     pdf = CloudinaryField(
-        upload_to='damanhour/Section/pdfs/',
-        storage=MediaCloudinaryStorage(),
+        resource_type='raw',
+        folder='damanhour/Section/pdfs/',
         blank=True, null=True,
     )
 
@@ -25,26 +25,26 @@ class section(models.Model):
 
 
 class acadmic_year(models.Model):
-    year = CloudinaryField(max_length=255, unique=True)
-    lecture_schedule = models.FileField(
-        upload_to='damanhour/academic_years/lecture_schedule/',
-        storage=MediaCloudinaryStorage(),
+    year = models.CharField(max_length=255, unique=True)
+    lecture_schedule = CloudinaryField(
+     resource_type='raw',
+        folder='damanhour/academic_years/lecture_schedule/',
         blank=True, null=True,
     )
     practical_exam = CloudinaryField(
-        storage=MediaCloudinaryStorage(),
-        upload_to='damanhour/academic_years/practical_exam/',
+       resource_type='raw',
+        folder='damanhour/academic_years/practical_exam/',
         blank=True, null=True,
     )
     exam = CloudinaryField(
-        storage=MediaCloudinaryStorage(),
-        upload_to='damanhour/academic_years/exam/',
+        resource_type='raw',
+        folder='damanhour/academic_years/exam/',
         blank=True, null=True,
         
     )
     seating_number =CloudinaryField(
-        storage=MediaCloudinaryStorage(),
-        upload_to='damanhour/academic_years/seating_number/',
+        resource_type='raw',
+        folder='damanhour/academic_years/seating_number/',
         blank=True, null=True,
     )
 
