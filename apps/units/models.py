@@ -20,4 +20,4 @@ class UnitService(models.Model):
     orgnization_structure = models.ManyToManyField('users.Staff', blank=True, related_name='unit_services')
     unit_objectives = models.TextField(blank=True, null=True)
     def __str__(self):
-        return f"{self.name} - {self.unit.name}"
+         return f"Service of {self.unit.name}" if self.unit else "Unnamed Service"
