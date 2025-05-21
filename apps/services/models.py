@@ -1,5 +1,7 @@
 from django.db import models
+from django.conf import settings
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from cloudinary.models import CloudinaryField
 
 class section(models.Model):
     type = models.CharField(max_length=255)
@@ -12,7 +14,7 @@ class section(models.Model):
         blank=True, null=True,
     )
     link = models.URLField(blank=True, null=True)
-    pdf = models.FileField(
+    pdf = CloudinaryField(
         upload_to='damanhour/Section/pdfs/',
         storage=MediaCloudinaryStorage(),
         blank=True, null=True,
@@ -23,24 +25,24 @@ class section(models.Model):
 
 
 class acadmic_year(models.Model):
-    year = models.CharField(max_length=255, unique=True)
+    year = CloudinaryField(max_length=255, unique=True)
     lecture_schedule = models.FileField(
         upload_to='damanhour/academic_years/lecture_schedule/',
         storage=MediaCloudinaryStorage(),
         blank=True, null=True,
     )
-    practical_exam = models.FileField(
+    practical_exam = CloudinaryField(
         storage=MediaCloudinaryStorage(),
         upload_to='damanhour/academic_years/practical_exam/',
         blank=True, null=True,
     )
-    exam = models.FileField(
+    exam = CloudinaryField(
         storage=MediaCloudinaryStorage(),
         upload_to='damanhour/academic_years/exam/',
         blank=True, null=True,
         
     )
-    seating_number = models.FileField(
+    seating_number =CloudinaryField(
         storage=MediaCloudinaryStorage(),
         upload_to='damanhour/academic_years/seating_number/',
         blank=True, null=True,
