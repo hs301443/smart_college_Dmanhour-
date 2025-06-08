@@ -6,6 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 from apps.academics.models import Department
+from django.contrib.auth.hashers import make_password
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -38,51 +39,42 @@ class CustomUserSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['id'] = instance.id
         return rep
+
+def make_password(password):
+    raise NotImplementedError
     
 
 
 class GraduationSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+     password = serializers.CharField(write_only=True)
+     repeat_password = serializers.CharField(write_only=True)
 
-    class Meta:
+     class Meta:
         model = Graduation
-        fields = '__all__' 
-
-    def validate(self, validated_data):
-       employment_status = validated_data.get('employment_status')
-       cv = validated_data.get('cv')
-
-       if self.instance is None and not cv:
-           raise serializers.ValidationError({'cv': 'This field is required.'})
-
-       allowed_statuses = ['employee', 'unemployee', 'freelance', 'postgraduate studies']
-
-       if self.instance is not None and employment_status is None:
-           return validated_data
-
-       if employment_status not in allowed_statuses:
-           raise serializers.ValidationError({
-               'employment_status': f'Invalid value. Must be one of: {", ".join(allowed_statuses)}'
-        })
-
-       if employment_status == 'employee':
-           required_fields = [
-            'job_name', 'location',
-            'company_email', 'company_phone',
-            'company_link', 'about_company'
+        fields = [
+            'email', 'username', 'password', 'repeat_password',
+            'cv', 'employment_status', 'job_name', 'location',
+            'company_email', 'company_phone', 'company_link', 'about_company',
+            'is_active', 'is_staff'
         ]
 
-           missing_fields = [
-            field for field in required_fields
-            if not validated_data.get(field) and not (self.instance and getattr(self.instance, field))
-        ]
+        def validate(self, data):
+         if data['password'] != data['repeat_password']:
+            raise serializers.ValidationError({"password": "Passwords do not match."})
+         return data
 
-           if missing_fields:
-            raise serializers.ValidationError({
-                field: 'This field is required for employees.' for field in missing_fields
-            })
+        def create(self, validated_data):
+         validated_data.pop('repeat_password')
+         password = validated_data.pop('password')
+         validated_data['password'] = make_password(password) 
+         return Graduation.objects.create(**validated_data)
 
-       return validated_data
+
+    
+        def to_representation(self, instance):
+         rep = super().to_representation(instance)
+         rep['id'] = instance.id
+         return rep
 
 
 class DepartmentBasicSerializer(serializers.ModelSerializer):

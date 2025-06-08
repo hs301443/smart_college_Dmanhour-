@@ -5,11 +5,6 @@ from cloudinary.models import CloudinaryField
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    USER_TYPE_CHOICES = (
-        ('graduation', 'Graduation'),
-        ('', 'None'),
-    )
-    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, blank=True, default='')
     username = models.CharField(max_length=150)
 
     is_active = models.BooleanField(default=True)
@@ -32,7 +27,9 @@ class Graduation(models.Model):
         ('postgraduate', 'Postgraduate Studies'),
     ]
 
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='graduation_info')
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)   
     cv = CloudinaryField(resource_type='raw',folder='damanour/Graduation/pdfs' ,blank=True, null=True)
     employment_status = models.CharField(max_length=100, choices=EMPLOYMENT_CHOICES)
     job_name = models.CharField(max_length=100, blank=True)
