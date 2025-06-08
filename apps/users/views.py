@@ -8,6 +8,8 @@ from .models import CustomUser, Graduation, Staff
 from django.shortcuts import get_object_or_404
 from apps.users import serializers
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 
 class RegisterUserView(APIView):
