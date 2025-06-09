@@ -40,9 +40,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         rep['id'] = instance.id
         return rep
 
-def make_password(password):
-    raise NotImplementedError
-    
+
 
 
 class GraduationSerializer(serializers.ModelSerializer):
