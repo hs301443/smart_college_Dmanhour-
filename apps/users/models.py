@@ -20,11 +20,13 @@ class CustomUser(AbstractUser):
 
 class Graduation(models.Model):
     EMPLOYMENT_CHOICES = [
-        ('employee', 'Employee'),
-        ('unemployee', 'Unemployee'),
-        ('freelance', 'Freelance'),
-        ('postgraduate', 'Postgraduate Studies'),
-    ]
+    ('employee', 'موظف'),
+    ('unemployee', 'غير موظف'),
+    ('freelance', 'يعمل عمل حر'),
+    ('postgraduate', 'طالب دراسات عليا'),
+    ('seeking_job', 'باحث عن عمل'),
+   ]
+
     is_active = models.BooleanField(default=True)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150)
