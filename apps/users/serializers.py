@@ -55,7 +55,7 @@ class GraduationSerializer(serializers.ModelSerializer):
             'email', 'username', 'password', 'repeat_password',
             'cv', 'employment_status', 'job_name', 'location',
             'company_email', 'company_phone', 'company_link', 'about_company',
-            'is_active', 'is_staff'
+            'is_active'
         ]
 
         def validate(self, data):

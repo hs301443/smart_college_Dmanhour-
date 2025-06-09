@@ -8,7 +8,6 @@ class CustomUser(AbstractUser):
     username = models.CharField(max_length=150)
 
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
 
 
     USERNAME_FIELD = 'email'  # ← دي هنا
@@ -26,7 +25,7 @@ class Graduation(models.Model):
         ('freelance', 'Freelance'),
         ('postgraduate', 'Postgraduate Studies'),
     ]
-
+    is_active = models.BooleanField(default=True)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150)
     password = models.CharField(max_length=128)   
