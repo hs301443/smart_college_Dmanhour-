@@ -40,7 +40,8 @@ class Graduation(models.Model):
     about_company = models.TextField(blank=True)
 
     def __str__(self):
-        return f"Graduation Info for {self.user.username}"
+     return f"Graduation Info for {self.username}"
+
 
 
 

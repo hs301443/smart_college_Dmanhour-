@@ -14,7 +14,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'password', 'repeat_password', 'user_type']
+        fields = ['email', 'username', 'password', 'repeat_password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -138,7 +138,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['user_type'] = 'Graduation' if Graduation.objects.filter(user=user).exists() else 'CustomUser'
+        token['user_type'] = 'Graduation' if Graduation.objects.filter(email=user.email).exists() else 'CustomUser'
         token['updatePassword'] = 1 if user.username == user.password else 0
         token['updateName'] = 0 if user.first_name else 1
         user.last_login = now()

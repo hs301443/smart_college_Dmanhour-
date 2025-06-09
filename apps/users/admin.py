@@ -5,15 +5,13 @@ from .models import CustomUser, Graduation,Staff
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('username', 'email', 'user_type', 'is_staff', 'is_active')
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('user_type',)}),
-    )
+    list_display = ('username', 'email', 'is_staff', 'is_active')
+ 
 
 
 
 class GraduationAdmin(admin.ModelAdmin):
-    list_display = ['user', 'employment_status', 'job_name']
+    list_display = [ 'employment_status', 'job_name']
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
