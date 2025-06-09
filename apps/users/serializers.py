@@ -46,10 +46,10 @@ def make_password(password):
 
 
 class GraduationSerializer(serializers.ModelSerializer):
-     password = serializers.CharField(write_only=True)
-     repeat_password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+    repeat_password = serializers.CharField(write_only=True)
 
-     class Meta:
+    class Meta:
         model = Graduation
         fields = [
             'email', 'username', 'password', 'repeat_password',
@@ -58,23 +58,23 @@ class GraduationSerializer(serializers.ModelSerializer):
             'is_active'
         ]
 
-        def validate(self, data):
-         if data['password'] != data['repeat_password']:
+    def validate(self, data):
+        if data['password'] != data['repeat_password']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
-         return data
+        return data
 
-        def create(self, validated_data):
-         validated_data.pop('repeat_password')
-         password = validated_data.pop('password')
-         validated_data['password'] = make_password(password) 
-         return Graduation.objects.create(**validated_data)
+    def create(self, validated_data):
+        validated_data.pop('repeat_password')
+        password = validated_data.pop('password')
+        validated_data['password'] = make_password(password)
+        return Graduation.objects.create(**validated_data)
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['id'] = instance.id
+        # متضيفش repeat_password هنا
+        return rep
 
-    
-        def to_representation(self, instance):
-         rep = super().to_representation(instance)
-         rep['id'] = instance.id
-         return rep
 
 
 class DepartmentBasicSerializer(serializers.ModelSerializer):
