@@ -22,6 +22,17 @@ class CustomUserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data['repeat_password']:
             raise serializers.ValidationError("Passwords do not match.")
+
+        email = data.get('email')
+
+        # تأكد إن الإيميل مش موجود في CustomUser
+        if CustomUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
+
+        # تأكد إن الإيميل مش موجود في Graduation
+        if Graduation.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "This email is already used in Graduation."})
+
         return data
 
     def create(self, validated_data):
@@ -59,6 +70,17 @@ class GraduationSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data['repeat_password']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
+
+        email = data.get('email')
+
+        # تأكد إن الإيميل مش موجود في CustomUser
+        if CustomUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
+
+        # تأكد إن الإيميل مش موجود في Graduation
+        if Graduation.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "This email is already used in Graduation."})
+
         return data
 
     def create(self, validated_data):
@@ -70,7 +92,6 @@ class GraduationSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['id'] = instance.id
-        # متضيفش repeat_password هنا
         return rep
 
 
