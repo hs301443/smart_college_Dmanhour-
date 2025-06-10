@@ -76,7 +76,7 @@ class GraduationSerializer(serializers.ModelSerializer):
         if Graduation.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in Graduation."})
 
-        # ✅ دعم القيم بالعربي والإنجليزي
+        # دعم اللغة العربية في حالة العمل
         arabic_to_english = {
             'موظف': 'employee',
             'غير موظف': 'unemployee',
@@ -85,13 +85,9 @@ class GraduationSerializer(serializers.ModelSerializer):
             'باحث عن عمل': 'seeking_job',
         }
 
-        emp_status = data.get('employment_status')
-        if emp_status in arabic_to_english:
-            data['employment_status'] = arabic_to_english[emp_status]
-        elif emp_status not in dict(Graduation.EMPLOYMENT_CHOICES):
-            raise serializers.ValidationError({
-                "employment_status": f"Invalid choice: {emp_status}"
-            })
+        employment = data.get('employment_status')
+        if employment in arabic_to_english:
+            data['employment_status'] = arabic_to_english[employment]
 
         return data
 
@@ -104,11 +100,8 @@ class GraduationSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['id'] = instance.id
-
-        # ✅ ترجمة القيم للعرض
-        arabic_labels = dict(Graduation.EMPLOYMENT_CHOICES)
-        rep['employment_status'] = arabic_labels.get(instance.employment_status, instance.employment_status)
         return rep
+
 
 
 
