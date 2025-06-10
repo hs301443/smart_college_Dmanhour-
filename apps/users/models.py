@@ -3,6 +3,8 @@ from django.db import models
 from cloudinary_storage.storage import MediaCloudinaryStorage
 from cloudinary.models import CloudinaryField
 
+
+
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150)
