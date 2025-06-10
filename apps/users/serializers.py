@@ -75,10 +75,14 @@ class GraduationSerializer(serializers.ModelSerializer):
         ]
 
     def to_internal_value(self, data):
-        employment_status = data.get('employment_status')
-        if employment_status in self.ARABIC_TO_ENGLISH:
-            data['employment_status'] = self.ARABIC_TO_ENGLISH[employment_status]
-        return super().to_internal_value(data)
+      data = data.copy()  # ✅ خلي نسخة قابلة للتعديل
+
+      employment_status = data.get('employment_status')
+      if employment_status in self.ARABIC_TO_ENGLISH:
+         data['employment_status'] = self.ARABIC_TO_ENGLISH[employment_status]
+
+      return super().to_internal_value(data)
+
 
     def validate(self, data):
         if data['password'] != data['repeat_password']:
