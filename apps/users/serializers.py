@@ -71,15 +71,13 @@ class GraduationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"password": "Passwords do not match."})
 
         email = data.get('email')
-
-        # التحقق من تكرار الإيميل
         if CustomUser.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
         if Graduation.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in Graduation."})
 
-        # دعم العربي والإنجليزي في employment_status
-        arabic_map = {
+        # ✅ دعم القيم بالعربي والإنجليزي
+        arabic_to_english = {
             'موظف': 'employee',
             'غير موظف': 'unemployee',
             'يعمل عمل حر': 'freelance',
@@ -88,10 +86,12 @@ class GraduationSerializer(serializers.ModelSerializer):
         }
 
         emp_status = data.get('employment_status')
-        if emp_status in arabic_map:
-            data['employment_status'] = arabic_map[emp_status]
+        if emp_status in arabic_to_english:
+            data['employment_status'] = arabic_to_english[emp_status]
         elif emp_status not in dict(Graduation.EMPLOYMENT_CHOICES):
-            raise serializers.ValidationError({"employment_status": "Invalid employment status."})
+            raise serializers.ValidationError({
+                "employment_status": f"Invalid choice: {emp_status}"
+            })
 
         return data
 
@@ -104,10 +104,12 @@ class GraduationSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['id'] = instance.id
-        # رجّع التسمية العربية
-        arabic_choices = dict(Graduation.EMPLOYMENT_CHOICES)
-        rep['employment_status'] = arabic_choices.get(instance.employment_status, instance.employment_status)
+
+        # ✅ ترجمة القيم للعرض
+        arabic_labels = dict(Graduation.EMPLOYMENT_CHOICES)
+        rep['employment_status'] = arabic_labels.get(instance.employment_status, instance.employment_status)
         return rep
+
 
 
 
