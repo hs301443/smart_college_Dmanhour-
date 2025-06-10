@@ -53,7 +53,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 
-
 class GraduationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     repeat_password = serializers.CharField(write_only=True)
@@ -73,13 +72,26 @@ class GraduationSerializer(serializers.ModelSerializer):
 
         email = data.get('email')
 
-        # تأكد إن الإيميل مش موجود في CustomUser
+        # التحقق من تكرار الإيميل
         if CustomUser.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
-
-        # تأكد إن الإيميل مش موجود في Graduation
         if Graduation.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in Graduation."})
+
+        # دعم العربي والإنجليزي في employment_status
+        arabic_map = {
+            'موظف': 'employee',
+            'غير موظف': 'unemployee',
+            'يعمل عمل حر': 'freelance',
+            'طالب دراسات عليا': 'postgraduate',
+            'باحث عن عمل': 'seeking_job',
+        }
+
+        emp_status = data.get('employment_status')
+        if emp_status in arabic_map:
+            data['employment_status'] = arabic_map[emp_status]
+        elif emp_status not in dict(Graduation.EMPLOYMENT_CHOICES):
+            raise serializers.ValidationError({"employment_status": "Invalid employment status."})
 
         return data
 
@@ -92,6 +104,9 @@ class GraduationSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         rep['id'] = instance.id
+        # رجّع التسمية العربية
+        arabic_choices = dict(Graduation.EMPLOYMENT_CHOICES)
+        rep['employment_status'] = arabic_choices.get(instance.employment_status, instance.employment_status)
         return rep
 
 
