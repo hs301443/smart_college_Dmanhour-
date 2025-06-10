@@ -66,6 +66,19 @@ class GraduationSerializer(serializers.ModelSerializer):
             'is_active'
         ]
 
+    ARABIC_TO_ENGLISH = {
+        'موظف': 'employee',
+        'غير موظف': 'unemployee',
+        'يعمل عمل حر': 'freelance',
+        'طالب دراسات عليا': 'postgraduate',
+        'باحث عن عمل': 'seeking_job',
+    }
+
+    def validate_employment_status(self, value):
+        if value in self.ARABIC_TO_ENGLISH:
+            return self.ARABIC_TO_ENGLISH[value]
+        return value  # لو مكتوبة إنجليزي أصلاً
+
     def validate(self, data):
         if data['password'] != data['repeat_password']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
@@ -75,19 +88,6 @@ class GraduationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
         if Graduation.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in Graduation."})
-
-        # دعم اللغة العربية في حالة العمل
-        arabic_to_english = {
-            'موظف': 'employee',
-            'غير موظف': 'unemployee',
-            'يعمل عمل حر': 'freelance',
-            'طالب دراسات عليا': 'postgraduate',
-            'باحث عن عمل': 'seeking_job',
-        }
-
-        employment = data.get('employment_status')
-        if employment in arabic_to_english:
-            data['employment_status'] = arabic_to_english[employment]
 
         return data
 
@@ -101,8 +101,6 @@ class GraduationSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['id'] = instance.id
         return rep
-
-
 
 
 
