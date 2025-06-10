@@ -53,10 +53,17 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 
-
 class GraduationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     repeat_password = serializers.CharField(write_only=True)
+
+    ARABIC_TO_ENGLISH = {
+        'موظف': 'employee',
+        'غير موظف': 'unemployee',
+        'يعمل عمل حر': 'freelance',
+        'طالب دراسات عليا': 'postgraduate',
+        'باحث عن عمل': 'seeking_job',
+    }
 
     class Meta:
         model = Graduation
@@ -67,18 +74,11 @@ class GraduationSerializer(serializers.ModelSerializer):
             'is_active'
         ]
 
-    ARABIC_TO_ENGLISH = {
-        'موظف': 'employee',
-        'غير موظف': 'unemployee',
-        'يعمل عمل حر': 'freelance',
-        'طالب دراسات عليا': 'postgraduate',
-        'باحث عن عمل': 'seeking_job',
-    }
-
-    def validate_employment_status(self, value):
-        if value in self.ARABIC_TO_ENGLISH:
-            return self.ARABIC_TO_ENGLISH[value]
-        return value  # لو المستخدم دخلها بالإنجليزي أصلاً
+    def to_internal_value(self, data):
+        employment_status = data.get('employment_status')
+        if employment_status in self.ARABIC_TO_ENGLISH:
+            data['employment_status'] = self.ARABIC_TO_ENGLISH[employment_status]
+        return super().to_internal_value(data)
 
     def validate(self, data):
         if data['password'] != data['repeat_password']:
@@ -102,6 +102,7 @@ class GraduationSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['id'] = instance.id
         return rep
+
 
 
 class DepartmentBasicSerializer(serializers.ModelSerializer):
