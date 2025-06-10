@@ -52,8 +52,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return rep
 
 
-
 class GraduationSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True)
+    username = serializers.CharField(max_length=150, write_only=True)
     password = serializers.CharField(write_only=True)
     repeat_password = serializers.CharField(write_only=True)
 
@@ -70,19 +71,16 @@ class GraduationSerializer(serializers.ModelSerializer):
         fields = [
             'email', 'username', 'password', 'repeat_password',
             'cv', 'employment_status', 'job_name', 'location',
-            'company_email', 'company_phone', 'company_link', 'about_company',
-            'is_active'
+            'company_email', 'company_phone', 'company_link',
+            'about_company', 'is_active'
         ]
 
     def to_internal_value(self, data):
-      data = data.copy()  # ✅ خلي نسخة قابلة للتعديل
-
-      employment_status = data.get('employment_status')
-      if employment_status in self.ARABIC_TO_ENGLISH:
-         data['employment_status'] = self.ARABIC_TO_ENGLISH[employment_status]
-
-      return super().to_internal_value(data)
-
+        data = data.copy()  # لازم نعمل نسخة قابلة للتعديل
+        employment_status = data.get('employment_status')
+        if employment_status in self.ARABIC_TO_ENGLISH:
+            data['employment_status'] = self.ARABIC_TO_ENGLISH[employment_status]
+        return super().to_internal_value(data)
 
     def validate(self, data):
         if data['password'] != data['repeat_password']:
@@ -90,22 +88,34 @@ class GraduationSerializer(serializers.ModelSerializer):
 
         email = data.get('email')
         if CustomUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
-        if Graduation.objects.filter(email=email).exists():
-            raise serializers.ValidationError({"email": "This email is already used in Graduation."})
+            raise serializers.ValidationError({"email": "This email is already used."})
 
         return data
 
     def create(self, validated_data):
-        validated_data.pop('repeat_password')
+        # افصل بيانات CustomUser
+        email = validated_data.pop('email')
+        username = validated_data.pop('username')
         password = validated_data.pop('password')
-        validated_data['password'] = make_password(password)
-        return Graduation.objects.create(**validated_data)
+        validated_data.pop('repeat_password')
+
+        # أنشئ المستخدم
+        user = CustomUser.objects.create(
+            email=email,
+            username=username,
+            password=make_password(password),
+        )
+
+        # أنشئ بيانات الخريج
+        graduation = Graduation.objects.create(user=user, **validated_data)
+        return graduation
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
+        rep['user'] = CustomUserSerializer(instance.user).data
         rep['id'] = instance.id
         return rep
+
 
 
 
