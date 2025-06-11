@@ -26,8 +26,9 @@ class Graduation(models.Model):
         ('seeking_job', 'باحث عن عمل'),
     ]
 
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='graduation_info')
-
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='graduation')
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=150)
     cv = CloudinaryField(resource_type='raw', folder='damanour/Graduation/pdfs', blank=True, null=True)
     employment_status = models.CharField(max_length=100, choices=EMPLOYMENT_CHOICES)
     job_name = models.CharField(max_length=100, blank=True)
@@ -39,7 +40,7 @@ class Graduation(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"Graduation Info for {self.user.username}"
+        return f"Graduation Info for {self.username}"
 
 
 

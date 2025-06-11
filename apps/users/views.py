@@ -59,6 +59,7 @@ class GraduationView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
     def get(self, request, graduation_id):
         if not IsAuth(request):
             return Response({"detail": "Authentication required"}, status=401)  
