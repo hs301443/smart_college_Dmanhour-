@@ -93,26 +93,27 @@ class GraduationSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        # افصل بيانات CustomUser
         email = validated_data.pop('email')
         username = validated_data.pop('username')
         password = validated_data.pop('password')
         validated_data.pop('repeat_password')
 
-        # أنشئ المستخدم
         user = CustomUser.objects.create(
             email=email,
             username=username,
             password=make_password(password),
         )
 
-        # أنشئ بيانات الخريج
         graduation = Graduation.objects.create(user=user, **validated_data)
         return graduation
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['user'] = CustomUserSerializer(instance.user).data
+        rep['user'] = {
+            'id': instance.user.id,
+            'email': instance.user.email,
+            'username': instance.user.username,
+        }
         rep['id'] = instance.id
         return rep
 
