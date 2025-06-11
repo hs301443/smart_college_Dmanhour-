@@ -30,21 +30,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
 
         # تأكد إن الإيميل مش موجود في Graduation
-        if Graduation.objects.filter(email=email).exists():
-            raise serializers.ValidationError({"email": "This email is already used in Graduation."})
+        if Graduation.objects.filter(user__email=email).exists():
+           raise serializers.ValidationError({"email": "This email is already used in Graduation."})
 
         return data
 
     def create(self, validated_data):
         validated_data.pop('repeat_password')
-        user_type = validated_data.get('user_type')
         user = CustomUser.objects.create_user(**validated_data)
 
-        # لو user_type = graduation يضيفه في جدول Graduation
-        if user_type == 'graduation':
-            Graduation.objects.create(user=user)
-
-        return user
+        
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
