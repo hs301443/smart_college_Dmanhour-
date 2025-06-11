@@ -25,17 +25,25 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
         email = data.get('email')
 
+        # تأكد إن الإيميل مش موجود في CustomUser
         if CustomUser.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in CustomUser."})
 
-        if Graduation.objects.filter(user__email=email).exists():
+        # تأكد إن الإيميل مش موجود في Graduation
+        if Graduation.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "This email is already used in Graduation."})
 
         return data
 
     def create(self, validated_data):
         validated_data.pop('repeat_password')
+        user_type = validated_data.get('user_type')
         user = CustomUser.objects.create_user(**validated_data)
+
+        # لو user_type = graduation يضيفه في جدول Graduation
+        if user_type == 'graduation':
+            Graduation.objects.create(user=user)
+
         return user
 
     def to_representation(self, instance):
@@ -85,17 +93,20 @@ class GraduationSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        # افصل بيانات CustomUser
         email = validated_data.pop('email')
         username = validated_data.pop('username')
         password = validated_data.pop('password')
         validated_data.pop('repeat_password')
 
+        # أنشئ المستخدم
         user = CustomUser.objects.create(
             email=email,
             username=username,
             password=make_password(password),
         )
 
+        # أنشئ بيانات الخريج
         graduation = Graduation.objects.create(user=user, **validated_data)
         return graduation
 
@@ -172,10 +183,20 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
     def get_token(cls, user):
-        token = super().get_token(user)
-        token['user_type'] = 'Graduation' if Graduation.objects.filter(email=user.email).exists() else 'CustomUser'
-        token['updatePassword'] = 1 if user.username == user.password else 0
-        token['updateName'] = 0 if user.first_name else 1
-        user.last_login = now()
-        user.save(update_fields=['last_login'])
-        return token
+     token = super().get_token(user)
+    
+    # التحقق من نوع المستخدم عن طريق العلاقة
+     token['user_type'] = 'Graduation' if Graduation.objects.filter(user=user).exists() else 'CustomUser'
+    
+    # التحقق مما إذا كان اسم المستخدم يطابق كلمة المرور
+     token['updatePassword'] = 1 if user.username == user.password else 0
+    
+    # التحقق مما إذا كان الاسم الأول فارغ
+     token['updateName'] = 0 if user.first_name else 1
+    
+    # تحديث وقت آخر تسجيل دخول
+     user.last_login = now()
+     user.save(update_fields=['last_login'])
+    
+     return token
+
