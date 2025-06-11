@@ -37,6 +37,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('repeat_password')
+        user_type = validated_data.get('user_type')
         user = CustomUser.objects.create_user(**validated_data)
 
         
