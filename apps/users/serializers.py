@@ -36,9 +36,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        validated_data.pop('repeat_password')
-        user_type = validated_data.get('user_type')
-        user = CustomUser.objects.create_user(**validated_data)
+      validated_data.pop('repeat_password')
+      user = CustomUser.objects.create_user(**validated_data)
+      return user  # ✅ لازم ترجعه
+
 
         
 
