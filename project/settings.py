@@ -30,9 +30,12 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default= False, cast=bool)
 
-ALLOWED_HOSTS = ALLOWED_HOSTS = ['smartcollegedmanhour-production.up.railway.app', 'localhost', '127.0.0.1','localhost:4200' ]
+ALLOWED_HOSTS = ['smartcollegedmanhour-production.up.railway.app', 'localhost', '127.0.0.1','localhost:4200' ]
 CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app','http://localhost:4200']
 # Application definition
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -44,6 +47,8 @@ INSTALLED_APPS = [
     'import_export',
     'cloudinary',
     'cloudinary_storage',
+        'corsheaders',
+
 
     
     'apps.core',
@@ -67,6 +72,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+        'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'project.urls'
