@@ -63,8 +63,6 @@ class GraduationView(APIView):
     def get(self, request, graduation_id):
         if not IsAuth(request):
             return Response({"detail": "Authentication required"}, status=401)  
-        if not has_permission("core.change_visionmission", request):
-            return Response({"detail": "Permission denied"}, status=403)
         graduation = get_object_or_404(Graduation, id=graduation_id)
         serializer = GraduationSerializer(graduation)
         return Response({
@@ -73,20 +71,25 @@ class GraduationView(APIView):
 
 
 
-    def patch(self, request, graduation_id):
-        if not IsAuth(request):
-            return Response({"detail": "Authentication required"}, status=401)
-        if not has_permission("core.change_visionmission", request):
-            return Response({"detail": "Permission denied"}, status=403)
-        graduation = get_object_or_404(Graduation, id=graduation_id)
-        serializer = GraduationSerializer(graduation, data=request.data, context={"request": request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "message": "Graduation data updated successfully.",
-                "graduation_data": serializer.data
-            }, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request):
+     if not IsAuth(request):
+        return Response({"detail": "Authentication required"}, status=401)
+
+     user = request.user
+     try:
+         graduation = Graduation.objects.get(user=user)
+     except Graduation.DoesNotExist:
+        return Response({"detail": "Graduation not found for this user."}, status=404)
+
+     serializer = GraduationSerializer(graduation, data=request.data, partial=True, context={"request": request})
+     if serializer.is_valid():
+        serializer.save()
+        return Response({
+            "message": "Graduation data updated successfully.",
+            "graduation_data": serializer.data
+        }, status=200)
+     return Response(serializer.errors, status=400)
+
 
 from rest_framework.parsers import MultiPartParser, FormParser
 
