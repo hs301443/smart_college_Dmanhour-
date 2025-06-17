@@ -36,6 +36,16 @@ CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
 ]
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'x-csrftoken',
+    'accept',
+    'origin',
+    'user-agent',
+    'x-requested-with',
+]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -64,6 +74,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,8 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-        'corsheaders.middleware.CorsMiddleware',
-
+        
 ]
 
 ROOT_URLCONF = 'project.urls'
