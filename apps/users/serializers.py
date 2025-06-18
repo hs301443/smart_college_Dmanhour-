@@ -80,12 +80,12 @@ class GraduationSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
     def validate(self, data):
-        if data['password'] != data['repeat_password']:
-            raise serializers.ValidationError({"password": "Passwords do not match."})
+        password = data.get('password')
+        repeat_password = data.get('repeat_password')
 
-        email = data.get('email')
-        if CustomUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError({"email": "This email is already used."})
+        if password or repeat_password:
+         if password != repeat_password:
+          raise serializers.ValidationError({"password": "Passwords do not match."})
 
         return data
 
