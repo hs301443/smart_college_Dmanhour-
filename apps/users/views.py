@@ -60,36 +60,39 @@ class GraduationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def get(self, request, graduation_id):
-        if not IsAuth(request):
-            return Response({"detail": "Authentication required"}, status=401)  
-        graduation = get_object_or_404(Graduation, id=graduation_id)
+    def get(self, request):
+        if not request.user or not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=401)
+
+        user = request.user
+        try:
+            graduation = Graduation.objects.get(user=user)
+        except Graduation.DoesNotExist:
+            return Response({"detail": "Graduation not found for this user."}, status=404)
+
         serializer = GraduationSerializer(graduation)
         return Response({
             "graduation_data": serializer.data
         }, status=status.HTTP_200_OK)
 
-
-
     def patch(self, request):
-     if not IsAuth(request):
-        return Response({"detail": "Authentication required"}, status=401)
+        if not request.user or not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=401)
 
-     user = request.user
-     try:
-         graduation = Graduation.objects.get(user=user)
-     except Graduation.DoesNotExist:
-        return Response({"detail": "Graduation not found for this user."}, status=404)
+        user = request.user
+        try:
+            graduation = Graduation.objects.get(user=user)
+        except Graduation.DoesNotExist:
+            return Response({"detail": "Graduation not found for this user."}, status=404)
 
-     serializer = GraduationSerializer(graduation, data=request.data, partial=True, context={"request": request})
-     if serializer.is_valid():
-        serializer.save()
-        return Response({
-            "message": "Graduation data updated successfully.",
-            "graduation_data": serializer.data
-        }, status=200)
-     return Response(serializer.errors, status=400)
-
+        serializer = GraduationSerializer(graduation, data=request.data, partial=True, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "Graduation data updated successfully.",
+                "graduation_data": serializer.data
+            }, status=200)
+        return Response(serializer.errors, status=400)
 
 from rest_framework.parsers import MultiPartParser, FormParser
 

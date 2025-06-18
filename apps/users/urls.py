@@ -9,9 +9,8 @@ urlpatterns = [
     path('register/update/<int:user_id>/', RegisterUserView.as_view(), name='user-update'),
     path('user/<int:user_id>/', RegisterUserView.as_view(), name='user-info'),
     
-    path('graduation/', GraduationView.as_view(), name='graduation-create'),
-    path('graduation/update/<int:graduation_id>/', GraduationView.as_view(), name='graduation-update'),
-    path('graduation/<int:graduation_id>/', GraduationView.as_view(), name='graduation-info'),
+    path('graduation/', GraduationView.as_view(), name='graduation-handler'),
+
     
     path('staff/', StaffView.as_view()),  # لو هتجيب الكل أو تعمل POST
     path('staff/<int:staff_id>/', StaffView.as_view()),  # لو هتجيب واحد أو تعمل PATCH
