@@ -31,7 +31,7 @@ class VisionMissionSerializer(serializers.ModelSerializer):
 
         
 class SliderSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(use_url=True)
+    video = serializers.FileField(use_url=True, required=False)
 
     class Meta:
         model = core_models.slider
