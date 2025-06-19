@@ -20,10 +20,10 @@ class VisionMission(models.Model):
 
 class slider(models.Model):
     title = models.CharField(max_length=255)
-    image =models.ImageField(
-        upload_to='damanhour/slider/images/',
-        storage=MediaCloudinaryStorage(),
-        blank=True, null=True,
+    video = CloudinaryField(
+        resource_type='video',
+        folder='damanhour/slider/videos/',
+        blank=True, null=True
     )
 
     def __str__(self):
