@@ -27,7 +27,8 @@ class slider(models.Model):
     )
 
     def __str__(self):
-     return self.video.name if self.video else "No video"
+      return self.title
+
 
 
 class FacultyInfo(models.Model):  
