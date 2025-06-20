@@ -92,7 +92,8 @@ class GraduationSerializer(serializers.ModelSerializer):
       if CustomUser.objects.filter(email=value).exists():
          raise serializers.ValidationError("    This email is already used in CustomUser.")
       return value
-
+  
+    
     def create(self, validated_data):
         # افصل بيانات CustomUser
         email = validated_data.pop('email')
@@ -120,6 +121,29 @@ class GraduationSerializer(serializers.ModelSerializer):
         }
         rep['id'] = instance.id
         return rep
+    def update(self, instance, validated_data):
+     user = instance.user
+
+    # تعديل بيانات المستخدم لو اتبعتت
+     email = validated_data.pop('email', None)
+     username = validated_data.pop('username', None)
+     password = validated_data.pop('password', None)
+     validated_data.pop('repeat_password', None)
+
+     if email:
+         user.email = email
+     if username:
+         user.username = username
+     if password:
+         user.password = make_password(password)
+     user.save()
+
+     for attr, value in validated_data.items():
+         setattr(instance, attr, value)
+     instance.save()
+
+     return instance
+
 
 
 
