@@ -2,12 +2,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,filters, generics
-from .models import Notification
+from .models import Notification, StudentPortalImage, Studentprtal
 from .serializers import NotificationSerializer
 from django.db.models import Q
 from project.shortcuts import IsAuth, has_permission
-from .models import Studentprtal
-from .serializers import StudentprtalSerializer
+from .serializers import StudentprtalSerializer, StudentPortalImageSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -61,6 +60,39 @@ class StudentPortalAPIView(APIView):
 
 
 
+class StudentPortalImageAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get(self, request, pk=None):
+        if pk:
+            image = get_object_or_404(StudentPortalImage, pk=pk)
+            serializer = StudentPortalImageSerializer(image)
+            return Response(serializer.data)
+        images = StudentPortalImage.objects.all()
+        serializer = StudentPortalImageSerializer(images, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        if not IsAuth(request):
+            return Response({"detail": "Authentication required"}, status=401)
+        if not has_permission("core.change_visionmission", request):
+            return Response({"detail": "Permission denied"}, status=403)
+
+        serializer = StudentPortalImageSerializer(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request, pk):
+        if not IsAuth(request):
+            return Response({"detail": "Authentication required"}, status=401)
+        if not has_permission("core.change_visionmission", request):
+            return Response({"detail": "Permission denied"}, status=403)
+
+        image = get_object_or_404(StudentPortalImage, pk=pk)
+        image.delete()
+        return Response({"message": "Deleted successfully"}, status=204)
 
 
 
