@@ -65,7 +65,7 @@ class Collegeleaders(models.Model):
         blank=True, null=True,
     )
     
-    cv = models.URLField(blank=True, null=True)
+    cv=CloudinaryField(resource_type='raw',folder='damanour/collegeleaders/pdfs' ,blank=True, null=True)
 
 
     def __str__(self):                                                          
