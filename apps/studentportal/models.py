@@ -9,11 +9,20 @@ class Studentprtal(models.Model):
     content = models.TextField()
     image = models.ImageField(storage=MediaCloudinaryStorage(),upload_to='damanhour/Studentportal/', blank=True, null=True)  
     link = models.URLField(max_length=255, blank=True, null=True) 
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title 
+    
+class StudentPortalImage(models.Model):
+    portal = models.ForeignKey(Studentprtal, on_delete=models.CASCADE, related_name="extra_images")
+    image = models.ImageField(
+        storage=MediaCloudinaryStorage(),
+        upload_to='damanhour/Studentportal/multiple/',
+        blank=False, null=False
+    )
     
     
     
