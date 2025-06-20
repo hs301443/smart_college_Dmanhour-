@@ -30,6 +30,7 @@ class UnitServiceSerializer(serializers.ModelSerializer):
         write_only=True,
         required=True
     )
+    unit_objectives = serializers.SerializerMethodField()
 
     class Meta:
         model = UnitService
@@ -37,6 +38,14 @@ class UnitServiceSerializer(serializers.ModelSerializer):
             'id', 'unit', 'unit_id', 'about_unit',
             'orgnization_structure', 'orgnization_structure_ids', 'unit_objectives'
         ]
+
+    def get_unit_objectives(self, obj):
+        """
+        تحويل unit_objectives من string إلى list مفصول بالسطر الفاضي
+        """
+        if obj.unit_objectives:
+            return [s.strip() for s in obj.unit_objectives.split('\r\n\r\n') if s.strip()]
+        return []
 
     def validate_about_unit(self, value):
         if not value:
