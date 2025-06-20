@@ -29,7 +29,7 @@ class StudentPortalAPIView(APIView):
         if not has_permission("core.change_visionmission", request):
             return Response({"detail": "Permission denied"}, status=403)
 
-        serializer = StudentprtalSerializer(data=request.data, partial=True, context={"request": request})
+        serializer = StudentprtalSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
