@@ -84,7 +84,7 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
     cv = serializers.FileField(write_only=True, required=False)
 
     class Meta:
-        model = Collegeleaders
+        model = core_models.Collegeleaders
         fields = '__all__'
 
     def validate_cv(self, value):
