@@ -93,16 +93,25 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         return value
 
     def upload_pdf_to_gofile(self, file):
-     gofile_url = "https://api.gofile.io/uploadFile"
+    # 1. Get the server
+     server_resp = requests.get("https://api.gofile.io/getServer")
+     server_data = server_resp.json()
+    
+     if server_data.get("status") != "ok":
+         raise serializers.ValidationError("Could not get GoFile server.")
+ 
+     server = server_data["data"]["server"]
+
+    # 2. Upload the file
+     upload_url = f"https://{server}.gofile.io/uploadFile"
      files = {"file": (file.name, file.read())}
+
      try:
-         response = requests.post(gofile_url, files=files)
-
-         print("Gofile raw response:", response.text)  # 👈 اطبع الاستجابة الفعلية
-
-         data = response.json()  # 👈 هنا بتفشل لو مش JSON
+         response = requests.post(upload_url, files=files)
+         print("Gofile raw response:", response.text)
+         data = response.json()
          if data.get("status") == "ok":
-             return data["data"]["directLink"]
+            return data["data"]["downloadPage"]
          raise serializers.ValidationError("Gofile upload failed.")
      except Exception as e:
          raise serializers.ValidationError(f"Upload error: {str(e)}")
