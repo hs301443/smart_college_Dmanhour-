@@ -93,54 +93,44 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         return value
 
     def upload_pdf_to_gofile(self, file):
-    # 1. Get the server
-     server_resp = requests.get("https://api.gofile.io/getServer")
-     server_data = server_resp.json()
-    
-     if server_data.get("status") != "ok":
-         raise serializers.ValidationError("Could not get GoFile server.")
- 
-     server = server_data["data"]["server"]
+      try:
+        # 1. Get upload server
+         server_resp = requests.get("https://api.gofile.io/getServer")
+        
+         if server_resp.status_code != 200:
+            raise serializers.ValidationError("Failed to get GoFile server (status not 200).")
 
-    # 2. Upload the file
-     upload_url = f"https://{server}.gofile.io/uploadFile"
-     files = {"file": (file.name, file.read())}
+         try:
+            server_data = server_resp.json()
+         except Exception as e:
+            raise serializers.ValidationError(f"Failed to parse server response: {server_resp.text}")
 
-     try:
+         if server_data.get("status") != "ok":
+            raise serializers.ValidationError("GoFile server response not ok.")
+
+         server = server_data["data"]["server"]
+
+        # 2. Upload file
+         upload_url = f"https://{server}.gofile.io/uploadFile"
+         files = {"file": (file.name, file.read())}
          response = requests.post(upload_url, files=files)
-         print("Gofile raw response:", response.text)
-         data = response.json()
+
+         if response.status_code != 200:
+            raise serializers.ValidationError("File upload failed (non-200 response).")
+
+         try:
+            data = response.json()
+         except Exception:
+             raise serializers.ValidationError(f"Failed to parse upload response: {response.text}")
+
          if data.get("status") == "ok":
-            return data["data"]["downloadPage"]
-         raise serializers.ValidationError("Gofile upload failed.")
-     except Exception as e:
-         raise serializers.ValidationError(f"Upload error: {str(e)}")
-    def create(self, validated_data):
-        cv_file = self.context['request'].FILES.get('cv')
-        if cv_file:
-            validated_data['cv'] = self.upload_pdf_to_gofile(cv_file)
-        return super().create(validated_data)
+             return data["data"]["downloadPage"]
+         else:
+             raise serializers.ValidationError("Gofile upload status not ok.")
+      except Exception as e:
+            raise serializers.ValidationError(f"Upload error: {str(e)}")
 
-    def update(self, instance, validated_data):
-        cv_file = self.context['request'].FILES.get('cv')
-        if cv_file:
-            validated_data['cv'] = self.upload_pdf_to_gofile(cv_file)
-        return super().update(instance, validated_data)
 
-    def validate_name(self, value):
-        if not value.strip():
-            raise serializers.ValidationError("name is required.")
-        return value
-
-    def validate_position(self, value):
-        if not value.strip():
-            raise serializers.ValidationError("position is required.")
-        return value
-
-    def validate_content(self, value):
-        if len(value.strip()) < 15:
-            raise serializers.ValidationError("content must be at least 15 characters long.")
-        return value
 
 #الشكاوى والمقترحات
 
