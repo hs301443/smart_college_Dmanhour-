@@ -93,17 +93,19 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         return value
 
     def upload_pdf_to_gofile(self, file):
-        gofile_url = "https://api.gofile.io/uploadFile"
-        files = {"file": (file.name, file.read())}
-        try:
-            response = requests.post(gofile_url, files=files)
-            data = response.json()
-            if data.get("status") == "ok":
-                return data["data"]["directLink"]
-            raise serializers.ValidationError("Gofile upload failed.")
-        except Exception as e:
-            raise serializers.ValidationError(f"Upload error: {str(e)}")
+     gofile_url = "https://api.gofile.io/uploadFile"
+     files = {"file": (file.name, file.read())}
+     try:
+         response = requests.post(gofile_url, files=files)
 
+         print("Gofile raw response:", response.text)  # 👈 اطبع الاستجابة الفعلية
+
+         data = response.json()  # 👈 هنا بتفشل لو مش JSON
+         if data.get("status") == "ok":
+             return data["data"]["directLink"]
+         raise serializers.ValidationError("Gofile upload failed.")
+     except Exception as e:
+         raise serializers.ValidationError(f"Upload error: {str(e)}")
     def create(self, validated_data):
         cv_file = self.context['request'].FILES.get('cv')
         if cv_file:
