@@ -27,7 +27,7 @@ class slider(models.Model):
     )
 
     def __str__(self):
-    return self.title or "No title"
+     return self.title or "No title"
 
 
 
