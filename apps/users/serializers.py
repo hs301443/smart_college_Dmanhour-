@@ -88,6 +88,10 @@ class GraduationSerializer(serializers.ModelSerializer):
           raise serializers.ValidationError({"password": "Passwords do not match."})
 
         return data
+    def validate_email(self, value):
+      if CustomUser.objects.filter(email=value).exists():
+         raise serializers.ValidationError("    This email is already used in CustomUser.")
+      return value
 
     def create(self, validated_data):
         # افصل بيانات CustomUser
