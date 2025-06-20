@@ -82,6 +82,7 @@ class StatisticsSerializer(serializers.ModelSerializer):
 class CollegeleadersSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
     cv = serializers.FileField(write_only=True, required=False)
+    cv_url = serializers.CharField(source='cv', read_only=True)
 
     class Meta:
         model = core_models.Collegeleaders
@@ -93,42 +94,53 @@ class CollegeleadersSerializer(serializers.ModelSerializer):
         return value
 
     def upload_pdf_to_gofile(self, file):
-      try:
-        # 1. Get upload server
-         server_resp = requests.get("https://api.gofile.io/getServer")
-        
-         if server_resp.status_code != 200:
-            raise serializers.ValidationError("Failed to get GoFile server (status not 200).")
+        try:
+            # Step 1: Get GoFile server
+            server_resp = requests.get("https://api.gofile.io/getServer")
+            if server_resp.status_code != 200:
+                raise serializers.ValidationError("Failed to get GoFile server.")
 
-         try:
-            server_data = server_resp.json()
-         except Exception as e:
-            raise serializers.ValidationError(f"Failed to parse server response: {server_resp.text}")
+            try:
+                server_data = server_resp.json()
+            except Exception:
+                raise serializers.ValidationError(f"Invalid server response: {server_resp.text}")
 
-         if server_data.get("status") != "ok":
-            raise serializers.ValidationError("GoFile server response not ok.")
+            if server_data.get("status") != "ok":
+                raise serializers.ValidationError("GoFile server status not ok.")
 
-         server = server_data["data"]["server"]
+            server = server_data["data"]["server"]
 
-        # 2. Upload file
-         upload_url = f"https://{server}.gofile.io/uploadFile"
-         files = {"file": (file.name, file.read())}
-         response = requests.post(upload_url, files=files)
+            # Step 2: Upload file
+            upload_url = f"https://{server}.gofile.io/uploadFile"
+            files = {"file": (file.name, file.read())}
+            response = requests.post(upload_url, files=files)
 
-         if response.status_code != 200:
-            raise serializers.ValidationError("File upload failed (non-200 response).")
+            if response.status_code != 200:
+                raise serializers.ValidationError("File upload failed.")
 
-         try:
-            data = response.json()
-         except Exception:
-             raise serializers.ValidationError(f"Failed to parse upload response: {response.text}")
+            try:
+                data = response.json()
+            except Exception:
+                raise serializers.ValidationError(f"Upload response is not JSON: {response.text}")
 
-         if data.get("status") == "ok":
-             return data["data"]["downloadPage"]
-         else:
-             raise serializers.ValidationError("Gofile upload status not ok.")
-      except Exception as e:
+            if data.get("status") == "ok":
+                return data["data"]["downloadPage"]
+            else:
+                raise serializers.ValidationError("Upload status not ok.")
+        except Exception as e:
             raise serializers.ValidationError(f"Upload error: {str(e)}")
+
+    def create(self, validated_data):
+        cv_file = validated_data.pop('cv', None)
+        if cv_file:
+            validated_data['cv'] = self.upload_pdf_to_gofile(cv_file)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        cv_file = validated_data.pop('cv', None)
+        if cv_file:
+            validated_data['cv'] = self.upload_pdf_to_gofile(cv_file)
+        return super().update(instance, validated_data)
 
 
 

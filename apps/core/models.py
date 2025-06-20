@@ -65,7 +65,7 @@ class Collegeleaders(models.Model):
         blank=True, null=True,
     )
     
-    cv = models.URLField(blank=True, null=True)  # بدّلناه من Cloudinary إلى رابط
+    cv = models.URLField(blank=True, null=True)
 
 
     def __str__(self):                                                          
