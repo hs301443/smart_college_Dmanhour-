@@ -5,7 +5,7 @@ from rest_framework import serializers
 from . import models as core_models
 from project.shortcuts import IsAuth
 from django.utils import timezone
-
+import requests
 # Serializers
 
 class VisionMissionSerializer(serializers.ModelSerializer):
@@ -79,30 +79,42 @@ class StatisticsSerializer(serializers.ModelSerializer):
   
 
 
-
 class CollegeleadersSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
-    cv = serializers.FileField(use_url=True)
+    cv = serializers.FileField(write_only=True, required=False)
 
     class Meta:
-        model = core_models.Collegeleaders
+        model = Collegeleaders
         fields = '__all__'
 
-    def validate_name(self, value):
-        if not value.strip():
-            raise serializers.ValidationError("name is required.")
+    def validate_cv(self, value):
+        if value and not value.name.endswith('.pdf'):
+            raise serializers.ValidationError("CV must be a PDF file.")
         return value
 
-    def validate_position(self, value):
-        if not value.strip():
-            raise serializers.ValidationError("position is required.")
-        return value
+    def upload_pdf_to_gofile(self, file):
+        gofile_url = "https://api.gofile.io/uploadFile"
+        files = {"file": (file.name, file.read())}
+        try:
+            response = requests.post(gofile_url, files=files)
+            data = response.json()
+            if data.get("status") == "ok":
+                return data["data"]["directLink"]
+            raise serializers.ValidationError("Gofile upload failed.")
+        except Exception as e:
+            raise serializers.ValidationError(f"Upload error: {str(e)}")
 
-    def validate_content(self, value):
-        if len(value.strip()) < 15:
-            raise serializers.ValidationError("content must be at least 15 characters long.")
-        return value
+    def create(self, validated_data):
+        cv_file = self.context['request'].FILES.get('cv')
+        if cv_file:
+            validated_data['cv'] = self.upload_pdf_to_gofile(cv_file)
+        return super().create(validated_data)
 
+    def update(self, instance, validated_data):
+        cv_file = self.context['request'].FILES.get('cv')
+        if cv_file:
+            validated_data['cv'] = self.upload_pdf_to_gofile(cv_file)
+        return super().update(instance, validated_data)
 
     def validate_name(self, value):
         if not value.strip():
