@@ -54,6 +54,7 @@ class GraduationSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150, write_only=True)
     password = serializers.CharField(write_only=True)
     repeat_password = serializers.CharField(write_only=True)
+    cv = serializers.FileField(use_url=True, required=False)
 
     ARABIC_TO_ENGLISH = {
         'موظف': 'employee',
