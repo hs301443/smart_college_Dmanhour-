@@ -30,11 +30,14 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default= True, cast=bool)
 
-ALLOWED_HOSTS = ['smartcollegedmanhour-production.up.railway.app', 'localhost', '127.0.0.1','localhost:4200' ]
-CSRF_TRUSTED_ORIGINS = ['https://smartcollegedmanhour-production.up.railway.app','http://localhost:4200']
+ALLOWED_HOSTS = ['smartcollegedmanhour-production.up.railway.app', 'localhost', '127.0.0.1','localhost:4200','smart-colleg.netlify.app' ]
+CSRF_TRUSTED_ORIGINS = ['https://smart-colleg.netlify.app','https://smartcollegedmanhour-production.up.railway.app','http://localhost:4200']
 # Application definition
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
+    'https://smart-colleg.netlify.app',
+    'https://smartcollegedmanhour-production.up.railway.app',
+    
 ]
 CORS_ALLOW_HEADERS = [
     'authorization',
